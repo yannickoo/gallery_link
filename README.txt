@@ -8,10 +8,10 @@ Unzip the archive and put the fancybox folder inside into sites/all/libraries
 
 There are some functions which you can use:
 
-gallery_link_get_file_path($fid, $preset)
-  Returns the path to a file. If $preset is set you'll get an imagecache path to $fid
+gallery_link_get_file_path($file, $preset)
+  Returns the path to a file. If $preset is set you'll get an imagecache path to $file
 
-  $fid - The file id (can also be a file path)
+  $file - The file id (can also be a file path)
   $preset - The name of the imagecache preset
 
 theme('gallery_link', $elements, $preset, $text, $options = array());
@@ -27,10 +27,10 @@ theme('gallery_link', $elements, $preset, $text, $options = array());
 <?php
   $images = array();
 
-  $images[] = array('fid' => 'http://drupal.org/files/druplicon.small_.png');
-  $images[] = array('fid' => 5);
-  $images[] = array('fid' => '/themes/garland/logo.png');
-  $images[] = array('fid' => 19);
+  $images[] = array('file' => 'http://drupal.org/files/druplicon.small_.png');
+  $images[] = array('file' => 5);
+  $images[] = array('file' => '/themes/garland/logo.png');
+  $images[] = array('file' => 19);
 
   return theme('gallery_link', $images, 'big', t('Click to open gallery'));
 }

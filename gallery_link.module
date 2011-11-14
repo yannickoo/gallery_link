@@ -48,9 +48,9 @@ function _gallery_link_imagecache_preset_available($preset) {
  * @param $element
  *   $element is an array which contains the images.
  *   $element = array(
- *     array('fid' => $fid),
- *     array('fid' => $fid),
- *     array('fid' => $fid),
+ *     array('file' => $fid),
+ *     array('file' => $fid),
+ *     array('file' => $fid),
  *   );
  * @param $preset
  *   The images will be display with this imagecache preset
@@ -73,14 +73,14 @@ function theme_gallery_link($element = array(), $preset, $text, $options = array
   foreach ($element as $item) {
     if ($preset) {
       // If an imagecache $preset is set and available we want the imagecache image
-      if ($path = gallery_link_get_file_path($item['fid'], $preset)) {
+      if ($path = gallery_link_get_file_path($item['file'], $preset)) {
         $data[] = array(
             'href' => $path,
         );
       }
     } else {
-      // We just want the filepath for the given $fid
-      if ($path = gallery_link_get_file_path($item['fid'])) {
+      // We just want the filepath for the given $file
+      if ($path = gallery_link_get_file_path($item['file'])) {
         $data[] = array(
             'href' => $path,
         );
@@ -110,17 +110,17 @@ function theme_gallery_link($element = array(), $preset, $text, $options = array
 /**
  * Returns a path to a file
  *
- * @param $fid
+ * @param $file
  *   Can be a file id or a file path
  * @param $preset
  *   (optional) The name of the imagecache preset you want
  *
  */
-function gallery_link_get_file_path($fid, $preset = NULL) {
-  // We check whether $fid can be a file id
-  if (is_numeric($fid)) {
+function gallery_link_get_file_path($file, $preset = NULL) {
+  // We check whether $file can be a file id
+  if (is_numeric($file)) {
     // We load the file
-    $file = field_file_load($fid);
+    $file = field_file_load($file);
     if($file) {
       // We check whether a preset was given and imagecache module is enabled
       if (isset($preset) && $preset && module_exists('imagecache')) {
@@ -139,8 +139,8 @@ function gallery_link_get_file_path($fid, $preset = NULL) {
     }
   }
   else {
-    // $fid isn't numeric so we guess that this is a file path
-    $path = $fid;
+    // $file isn't numeric so we guess that this is a file path
+    $path = $file;
 
     // We check if the file path could be an internal one
     $path_parsed = parse_url($path);
