@@ -6,9 +6,9 @@ define('FANCYBOX_VERSION', '1.3.4');
 /**
  * Implements hook_themey().
  */
-function slideshow_link_theme() {
+function gallery_link_theme() {
   return array(
-      'slideshow_link' => array(
+      'gallery_link' => array(
           'arguments' => array('element' => NULL),
       ),
   );
@@ -21,7 +21,7 @@ function slideshow_link_theme() {
  *   The name of the imagecache preset
  *
  */
-function _slideshow_link_imagecache_preset_available($preset) {
+function _gallery_link_imagecache_preset_available($preset) {
   // We build an array where we're putting previous queries for caching
   static $imagecache_presets = array();
 
@@ -35,7 +35,7 @@ function _slideshow_link_imagecache_preset_available($preset) {
     }
     else {
       // If the wanted imagecache preset isn't available we report it!
-      watchdog('slideshow_link', t('Imagecache preset %preset doesn\'t exist.', array('%preset' => $preset)), WATCHDOG_ERROR);
+      watchdog('gallery_link', t('Imagecache preset %preset doesn\'t exist.', array('%preset' => $preset)), WATCHDOG_ERROR);
     }
   }
 
@@ -61,12 +61,12 @@ function _slideshow_link_imagecache_preset_available($preset) {
  *   from the l() function
  *
  */
-function theme_slideshow_link($element = array(), $preset, $text, $options = array()) {
+function theme_gallery_link($element = array(), $preset, $text, $options = array()) {
   // We count so that we can support multiple slideshows
   static $counter = 0;
   $data = array();
   $output = '';
-  if (isset($preset) && $preset && !_slideshow_link_imagecache_preset_available($preset)) {
+  if (isset($preset) && $preset && !_gallery_link_imagecache_preset_available($preset)) {
     // If $preset is set but isn't available we empty $preset
     $preset = '';
   }
@@ -74,13 +74,13 @@ function theme_slideshow_link($element = array(), $preset, $text, $options = arr
     if ($preset) {
       // If an imagecache $preset is set and available we want the imagecache image
       $data[] = array(
-          'href' => slideshow_link_get_file_path($item['fid'], $preset),
+          'href' => gallery_link_get_file_path($item['fid'], $preset),
       );
     }
     else {
       // We just want the filepath for the given $fid
       $data[] = array(
-          'href' => slideshow_link_get_file_path($item['fid']),
+          'href' => gallery_link_get_file_path($item['fid']),
       );
     }
   }
@@ -88,16 +88,16 @@ function theme_slideshow_link($element = array(), $preset, $text, $options = arr
   // We add needed files for fancybox and our custom javascript file
   drupal_add_css(libraries_get_path('fancybox') . '/jquery.fancybox-' . FANCYBOX_VERSION . '.css');
   drupal_add_js(libraries_get_path('fancybox') . '/jquery.fancybox-' . FANCYBOX_VERSION . '.pack.js');
-  drupal_add_js(drupal_get_path('module', 'slideshow_link') . '/slideshow_link.js');
+  drupal_add_js(drupal_get_path('module', 'gallery_link') . '/gallery_link.js');
 
-  // We put the $data array into the Drupal.settings.slideshow_link
-  drupal_add_js(array('slideshow_link' => array($data)), 'setting');
+  // We put the $data array into the Drupal.settings.gallery_link
+  drupal_add_js(array('gallery_link' => array($data)), 'setting');
 
-  // We add a "data-loom-slideshow-id" attribute where we save the slideshow id ($counter)
-  $options['attributes']['data-slideshow-link-id'] = $counter;
+  // We add a "data-gallery-id" attribute where we save the slideshow id ($counter)
+  $options['attributes']['data-gallery-id'] = $counter;
 
-  // We add a class "loom-slideshow-trigger"
-  ($options['attributes']['class']) ? $options['attributes']['class'] .= ' slideshow-link-trigger' : $options['attributes']['class'] = 'slideshow-link-trigger';
+  // We add a class "gallery-link-trigger"
+  ($options['attributes']['class']) ? $options['attributes']['class'] .= ' gallery-link-trigger' : $options['attributes']['class'] = 'gallery-link-trigger';
 
   // Now we print the link with given $text and all given $options
   $output .= l($text, '', $options);
@@ -116,7 +116,7 @@ function theme_slideshow_link($element = array(), $preset, $text, $options = arr
  *   (optional) The name of the imagecache preset you want
  *
  */
-function slideshow_link_get_file_path($fid, $preset = NULL) {
+function gallery_link_get_file_path($fid, $preset = NULL) {
   // We check whether $fid can be a file id
   if (is_numeric($fid)) {
     // We load the file
@@ -124,7 +124,7 @@ function slideshow_link_get_file_path($fid, $preset = NULL) {
     // We check whether a preset was given and imagecache module is enabled
     if (isset($preset) && $preset && module_exists('imagecache')) {
       // We check whether the given preset exists
-      if (_slideshow_link_imagecache_preset_available($preset)) {
+      if (_gallery_link_imagecache_preset_available($preset)) {
         $path = url(file_directory_path() . '/' . 'imagecache/' . $preset . '/' . $file['filepath']);
       }
       else {

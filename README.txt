@@ -8,13 +8,13 @@ Unzip the archive and put the fancybox folder inside into sites/all/libraries
 
 There are some functions which you can use:
 
-slideshow_link_get_file_path($fid, $preset)
+gallery_link_get_file_path($fid, $preset)
   Returns the path to a file. If $preset is set you'll get an imagecache path to $fid
 
   $fid - The file id (can also be a filepath)
   $preset - The name of the imagecache preset
 
-theme('slideshow_link', $elements, $preset, $text, $options = array());
+theme('gallery_link', $elements, $preset, $text, $options = array());
   Returns a link which triggers a slideshow
 
   $element - $element is an array which contains the images.
