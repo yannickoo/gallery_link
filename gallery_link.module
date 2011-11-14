@@ -73,15 +73,18 @@ function theme_gallery_link($element = array(), $preset, $text, $options = array
   foreach ($element as $item) {
     if ($preset) {
       // If an imagecache $preset is set and available we want the imagecache image
-      $data[] = array(
-          'href' => gallery_link_get_file_path($item['fid'], $preset),
-      );
-    }
-    else {
+      if ($path = gallery_link_get_file_path($item['fid'], $preset)) {
+        $data[] = array(
+            'href' => $path,
+        );
+      }
+    } else {
       // We just want the filepath for the given $fid
-      $data[] = array(
-          'href' => gallery_link_get_file_path($item['fid']),
-      );
+      if ($path = gallery_link_get_file_path($item['fid'])) {
+        $data[] = array(
+            'href' => $path,
+        );
+      }
     }
   }
 
@@ -95,9 +98,6 @@ function theme_gallery_link($element = array(), $preset, $text, $options = array
 
   // We add a "data-gallery-id" attribute where we save the slideshow id ($counter)
   $options['attributes']['data-gallery-id'] = $counter;
-
-  // We add a class "gallery-link-trigger"
-  ($options['attributes']['class']) ? $options['attributes']['class'] .= ' gallery-link-trigger' : $options['attributes']['class'] = 'gallery-link-trigger';
 
   // Now we print the link with given $text and all given $options
   $output .= l($text, '', $options);
@@ -121,24 +121,35 @@ function gallery_link_get_file_path($fid, $preset = NULL) {
   if (is_numeric($fid)) {
     // We load the file
     $file = field_file_load($fid);
-    // We check whether a preset was given and imagecache module is enabled
-    if (isset($preset) && $preset && module_exists('imagecache')) {
-      // We check whether the given preset exists
-      if (_gallery_link_imagecache_preset_available($preset)) {
-        $path = url(file_directory_path() . '/' . 'imagecache/' . $preset . '/' . $file['filepath']);
-      }
-      else {
-        // If the given preset isn't available we ignore it and use the normal file path
-        $path = url($file['filepath']);
+    if($file) {
+      // We check whether a preset was given and imagecache module is enabled
+      if (isset($preset) && $preset && module_exists('imagecache')) {
+        // We check whether the given preset exists
+        if (_gallery_link_imagecache_preset_available($preset)) {
+          $path = url(file_directory_path() . '/' . 'imagecache/' . $preset . '/' . $file['filepath']);
+        }
+        else {
+          // If the given preset isn't available we ignore it and use the normal file path
+          $path = url($file['filepath']);
+        }
       }
     }
     else {
-      $path = url($file['filepath']);
+      $path = '';
     }
   }
   else {
     // $fid isn't numeric so we guess that this is a file path
     $path = $fid;
+
+    // We check if the file path could be an internal one
+    $path_parsed = parse_url($path);
+    if (!isset($path_parsed['scheme'])) {
+      if (strpos($path, '/') === 0) {
+        $path = substr($path, 1);
+      }
+      $path = url(file_directory_path() . '/' . 'imagecache/' . $preset . '/' . $path);
+    }
   }
   return $path;
 }
