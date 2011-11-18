@@ -36,7 +36,7 @@ function _gallery_link_imagecache_preset_available($preset) {
       }
       else {
         // If the wanted imagecache preset isn't available we report it!
-        watchdog('gallery_link', t('Imagecache preset %preset doesn\'t exist.', array('%preset' => $preset)), WATCHDOG_ERROR);
+        watchdog('gallery_link', t('Imagecache preset %preset doesn\'t exist.', array('%preset' => $preset)), array(), WATCHDOG_ERROR);
       }
     }
   }
@@ -45,7 +45,7 @@ function _gallery_link_imagecache_preset_available($preset) {
 }
 
 /**
- * Returns a link which triggers a slideshow
+ * Returns a link which triggers a gallery
  *
  * @param $element
  *   $element is an array which contains the images.
@@ -64,7 +64,7 @@ function _gallery_link_imagecache_preset_available($preset) {
  *
  */
 function theme_gallery_link($element = array(), $link_text, $preset, $link_options = array(), $fancybox_options = array()) {
-  // We count so that we can support multiple slideshows
+  // We count so that we can support multiple galleries
   static $counter = 0;
   $data = array();
   $data['images'] = array();
