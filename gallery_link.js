@@ -8,3 +8,4 @@ Drupal.behaviors.gallery_link = function(context) {
       e.preventDefault();
    });
 }
+
