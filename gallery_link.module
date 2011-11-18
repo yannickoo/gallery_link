@@ -73,12 +73,12 @@ function theme_gallery_link($element = array(), $link_text, $preset, $link_optio
     // If $preset is set but isn't available we empty $preset
     $preset = '';
   }
-foreach ($element as $delta => $item) {
-  $data['images'][$delta]['href'] = !empty($preset) ? gallery_link_get_file_path($item['file'], $preset) : gallery_link_get_file_path($item['file']);
-  if (!empty($item['title'])) {
-    $data['images'][$delta]['title'] = $item['title'];
+  foreach ($element as $delta => $item) {
+    $data['images'][$delta]['href'] = !empty($preset) ? gallery_link_get_file_path($item['file'], $preset) : gallery_link_get_file_path($item['file']);
+    if (!empty($item['title'])) {
+      $data['images'][$delta]['title'] = $item['title'];
+    }
   }
-}
 
   if (isset($fancybox_options) && $fancybox_options) {
     $data['options'] = $fancybox_options;
