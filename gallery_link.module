@@ -69,13 +69,13 @@ function theme_gallery_link($element = array(), $link_text, $preset, $link_optio
   $data = array();
   $data['images'] = array();
   $output = '';
-  if (isset($preset) && $preset && !_gallery_link_imagecache_preset_available($preset)) {
+  if (!empty($preset) && !_gallery_link_imagecache_preset_available($preset)) {
     // If $preset is set but isn't available we empty $preset
     $preset = '';
   }
   foreach ($element as $item) {
-    ($item['title']) ? $title = $item['title'] : $title = '';
-    ($preset) ? $path = gallery_link_get_file_path($item['file'], $preset) : $path = gallery_link_get_file_path($item['file']);
+    (!empty($item['title'])) ? $title = check_plain($item['title']) : $title = '';
+    (!empty($preset)) ? $path = gallery_link_get_file_path($item['file'], $preset) : $path = gallery_link_get_file_path($item['file']);
     if ($path) {
       $data['images'][] = array(
         'href' => $path,
