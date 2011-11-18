@@ -22,20 +22,20 @@ function gallery_link_theme() {
  *
  */
 function _gallery_link_imagecache_preset_available($preset) {
-  // We build an array where we're putting previous queries for caching
-  static $imagecache_presets = array();
+  if (module_exists('imagecache')) {
+    // We build an array where we're putting previous queries for caching
+    static $imagecache_presets = array();
 
-  if (isset($imagecache_presets[$preset])) {
-    return $imagecache_presets[$preset];
-  }
-  else {
-    if (db_result(db_query("SELECT presetname FROM {imagecache_preset} WHERE presetname = '%s'", $preset))) {
-      $imagecache_presets[$preset] = TRUE;
-      return TRUE;
-    }
-    else {
-      // If the wanted imagecache preset isn't available we report it!
-      watchdog('gallery_link', t('Imagecache preset %preset doesn\'t exist.', array('%preset' => $preset)), WATCHDOG_ERROR);
+    if (isset($imagecache_presets[$preset])) {
+      return $imagecache_presets[$preset];
+    } else {
+      if (db_result(db_query("SELECT presetname FROM {imagecache_preset} WHERE presetname = '%s'", $preset))) {
+        $imagecache_presets[$preset] = TRUE;
+        return TRUE;
+      } else {
+        // If the wanted imagecache preset isn't available we report it!
+        watchdog('gallery_link', t('Imagecache preset %preset doesn\'t exist.', array('%preset' => $preset)), WATCHDOG_ERROR);
+      }
     }
   }
 
@@ -61,7 +61,7 @@ function _gallery_link_imagecache_preset_available($preset) {
  *   from the l() function
  *
  */
-function theme_gallery_link($element = array(), $preset, $text, $options = array()) {
+function theme_gallery_link($element = array(), $text, $preset, $options = array()) {
   // We count so that we can support multiple slideshows
   static $counter = 0;
   $data = array();
@@ -71,11 +71,13 @@ function theme_gallery_link($element = array(), $preset, $text, $options = array
     $preset = '';
   }
   foreach ($element as $item) {
+    ($item['title']) ? $title = $item['title'] : $title = '';
     if ($preset) {
       // If an imagecache $preset is set and available we want the imagecache image
       if ($path = gallery_link_get_file_path($item['file'], $preset)) {
         $data[] = array(
             'href' => $path,
+            'title' => $title,
         );
       }
     } else {
@@ -83,6 +85,7 @@ function theme_gallery_link($element = array(), $preset, $text, $options = array
       if ($path = gallery_link_get_file_path($item['file'])) {
         $data[] = array(
             'href' => $path,
+            'title' => $title,
         );
       }
     }
@@ -120,7 +123,7 @@ function gallery_link_get_file_path($file, $preset = NULL) {
   // We check whether $file can be a file id
   if (is_numeric($file)) {
     // We load the file
-    $file = field_file_load($file);
+    $file = field_file_load($file);    
     if($file) {
       // We check whether a preset was given and imagecache module is enabled
       if (isset($preset) && $preset && module_exists('imagecache')) {
@@ -132,6 +135,8 @@ function gallery_link_get_file_path($file, $preset = NULL) {
           // If the given preset isn't available we ignore it and use the normal file path
           $path = url($file['filepath']);
         }
+      } else {
+        $path = url($file['filepath']);
       }
     }
     else {

@@ -18,8 +18,8 @@ theme('gallery_link', $elements, $preset, $text, $options = array());
   Returns a link which triggers a slideshow
 
   $element - $element is an array which contains the images.
-  $preset - The images will be display with this imagecache preset
   $text - This is the text of the trigger link
+  $preset - The images will be display with this imagecache preset
   $options - (optional) Here can you pass an array which is structured like the options from the l() function
 
 --Example --
@@ -32,7 +32,7 @@ theme('gallery_link', $elements, $preset, $text, $options = array());
   $images[] = array('file' => '/themes/garland/logo.png');
   $images[] = array('file' => 19);
 
-  return theme('gallery_link', $images, 'big', t('Click to open gallery'));
+  return theme('gallery_link', $images, t('Click to open gallery'), 'big');
 }
 ?>
 
