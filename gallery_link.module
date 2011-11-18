@@ -36,7 +36,7 @@ function _gallery_link_imagecache_preset_available($preset) {
       }
       else {
         // If the wanted imagecache preset isn't available we report it!
-        watchdog('gallery_link', t('Imagecache preset %preset doesn\'t exist.', array('%preset' => $preset)), array(), WATCHDOG_ERROR);
+        watchdog('gallery_link', t("Imagecache preset %preset doesn't exist.", array('%preset' => $preset)), array(), WATCHDOG_ERROR);
       }
     }
   }
@@ -47,23 +47,26 @@ function _gallery_link_imagecache_preset_available($preset) {
 /**
  * Returns a link which triggers a gallery
  *
- * @param $element
- *   $element is an array which contains the images.
- *   $element = array(
+ * @param $items
+ *   $items is an array which contains the images.
+ *   $items = array(
  *     array('file' => $fid),
  *     array('file' => $fid),
  *     array('file' => $fid),
  *   );
- * @param $preset
- *   The images will be display with this imagecache preset
  * @param $text
  *   This is the text of the trigger link
- * @param $options
+ * @param $preset
+ *   The images will be display with this imagecache preset
+ * @param $link_options
  *   (optional) Here can you pass an array which is structured like the options
  *   from the l() function
+ * @param $fancybox_options
+ *   (optional) Here you can pass an array which defines the fancybox options
+ *   (http://fancybox.net/api)
  *
  */
-function theme_gallery_link($element = array(), $link_text, $preset, $link_options = array(), $fancybox_options = array()) {
+function theme_gallery_link($items = array(), $link_text, $preset, $link_options = array(), $fancybox_options = array()) {
   // We count so that we can support multiple galleries
   static $counter = 0;
   $data = array();
@@ -92,7 +95,7 @@ function theme_gallery_link($element = array(), $link_text, $preset, $link_optio
   // We put the $data array into the Drupal.settings.gallery_link
   drupal_add_js(array('gallery_link' => array($data)), 'setting');
 
-  // We add a "data-gallery-id" attribute where we save the gallery id ($counter)
+  // We add a an attribute which stores the gallery id ($counter)
   $link_options['attributes']['data-gallery-id'] = $counter;
 
   // Now we print the link with given $link_text and all given $options
@@ -125,7 +128,7 @@ function gallery_link_get_file_path($file, $preset = NULL) {
           $path = url(file_directory_path() . '/' . 'imagecache/' . $preset . '/' . $file['filepath']);
         }
         else {
-          // If the given preset isn't available we ignore it and use the normal file path
+          // If the given preset isn't available we use normal path
           $path = url($file['filepath']);
         }
       }
