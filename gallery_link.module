@@ -161,4 +161,3 @@ function gallery_link_get_file_path($file, $preset = NULL) {
   }
   return $path;
 }
-
