@@ -73,4 +73,3 @@
 
 So we get a link with the label "Click to open gallery" and on click
 it triggers a gallery displaying our images with the imagecache preset "big".
-
