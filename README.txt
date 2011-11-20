@@ -19,7 +19,7 @@
   
   Returns a link which triggers a slideshow
 
-  $items              $items is an array which contains the images
+  $items              Is an array which contains the images
                       (optional) You can add 'title' to each element
                       which will be used as caption in the fancybox
 
