@@ -70,7 +70,8 @@ function _gallery_link_imagecache_preset_available($preset) {
  * @param $fancybox_options
  *   (optional) Here you can pass an array which defines the fancybox options
  *   (http://fancybox.net/api)
- *
+ * @return $output
+ *   A link which triggers the gallery on click
  */
 function theme_gallery_link($items = array(), $link_text, $preset, $link_options = array(), $fancybox_options = array()) {
   // We count so that we can support multiple galleries
