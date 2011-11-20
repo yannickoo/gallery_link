@@ -19,7 +19,8 @@
   
   Returns a link which triggers a slideshow
 
-  $items              $items is an array which contains the images.
+  $items              $items is an array which contains the images
+                      (optional) You can add a title which is displayed as caption
 
   $link_text          This is the text of the trigger link
 
