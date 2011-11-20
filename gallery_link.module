@@ -42,7 +42,7 @@ function _gallery_link_imagecache_preset_available($preset) {
       }
       else {
         // If the wanted imagecache preset isn't available we report it!
-        watchdog('gallery_link', t("Imagecache preset %preset doesn't exist.", array('%preset' => $preset)), array(), WATCHDOG_ERROR);
+        watchdog('gallery_link', "Imagecache preset %preset doesn't exist.", array('%preset' => $preset), array(), WATCHDOG_ERROR);
       }
     }
   }
