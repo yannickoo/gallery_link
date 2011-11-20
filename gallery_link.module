@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * 
+ *
  * @author Yannick Leyendecker - http://drupal.org/user/531118/contact
  */
 
@@ -156,7 +156,7 @@ function gallery_link_get_file_path($file, $preset = NULL) {
     $path_parsed = parse_url($path);
     if (!isset($path_parsed['scheme'])) {
       if (strpos($path, '/') === 0) {
-        $path = substr($path, 1);
+        $path = drupal_substr($path, 1);
       }
       $path = url(file_directory_path() . '/' . 'imagecache/' . $preset . '/' . $path);
     }
