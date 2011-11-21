@@ -60,7 +60,7 @@ function _gallery_link_imagecache_preset_available($preset) {
  *     array('file' => $fid),
  *     array('file' => $fid),
  *   );
- * @param $text
+ * @param $link_text
  *   This is the text of the trigger link
  * @param $preset
  *   The images will be display with this imagecache preset
