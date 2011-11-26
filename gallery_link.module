@@ -54,7 +54,8 @@ function _gallery_link_imagecache_preset_available($preset) {
  * Returns a link which triggers a gallery
  *
  * @param $items
- *   $items is an array which contains the images and optionally the titles (captions).
+ *   $items is an array which contains the images and
+ *   optionally the titles (captions).
  *   $items = array(
  *     array('file' => $fid),
  *     array('file' => $fid),
@@ -73,7 +74,7 @@ function _gallery_link_imagecache_preset_available($preset) {
  * @return $output
  *   A link which triggers the gallery on click
  */
-function theme_gallery_link($items = array(), $link_text, $preset, $link_options = array(), $fancybox_options = array()) {
+function theme_gallery_link($items = array(), $link_text = t('Open gallery'), $preset = NULL, $link_options = array(), $fancybox_options = array()) {
   // We count so that we can support multiple galleries
   static $counter = 0;
   $data = array();
@@ -158,7 +159,7 @@ function gallery_link_get_file_path($file, $preset = NULL) {
       if (strpos($path, '/') === 0) {
         $path = drupal_substr($path, 1);
       }
-      $path = url(file_directory_path() . '/' . 'imagecache/' . $preset . '/' . $path);
+      $path = url("file_directory_path()/imagecache/$preset/$path");
     }
   }
   return $path;
