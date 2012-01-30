@@ -1,7 +1,9 @@
 <?php
 /**
  * @file
+ * Gallery link
  *
+ * This is a module which place a link on your site which triggers a slideshow.
  */
 
 /* We define the version of fancybox here so that it's easy to update. */
