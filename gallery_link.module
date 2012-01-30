@@ -21,7 +21,7 @@ function gallery_link_theme() {
 /**
  * Returns a boolean whether an imagecache preset is available
  *
- * @param string
+ * @param $preset
  *   The name of the imagecache preset
  *
  * @return boolean
@@ -53,7 +53,7 @@ function _gallery_link_imagecache_preset_available($preset) {
 /**
  * Returns a link which triggers a gallery
  *
- * @param array()
+ * @param $items
  *   An array which contains the images and
  *   optionally the titles (captions).
  *   $items = array(
@@ -61,14 +61,14 @@ function _gallery_link_imagecache_preset_available($preset) {
  *     array('file' => $fid),
  *     array('file' => $fid, 'title' => 'Caption'),
  *   );
- * @param string
+ * @param $link_text
  *   This is the text of the trigger link
- * @param string
+ * @param $preset
  *   The images will be display with this imagecache preset
- * @param array()
+ * @param $link_options
  *   (optional) Here can you pass an array which is structured like the options
  *   from the l() function
- * @param array()
+ * @param $fancybox_options
  *   (optional) Here you can pass an array which defines the fancybox options
  *   (http://fancybox.net/api)
  *
@@ -119,9 +119,9 @@ function theme_gallery_link($items = array(), $link_text = t('Open gallery'), $p
 /**
  * Returns a path to a file
  *
- * @param integer / string
+ * @param $file
  *   Can be a file id or a file path
- * @param string
+ * @param $preset
  *   (optional) The name of the imagecache preset you want
  *
  * @return string

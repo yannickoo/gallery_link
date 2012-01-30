@@ -40,16 +40,16 @@
 
     $images[] = array(
       'file' => 'http://drupal.org/files/druplicon.small_.png',
-      'title' => 'just druplicon'
+      'title' => 'just druplicon',
     );
 
     $images[] = array(
       'file' => 5,
-      'title' => 'nice five'
+      'title' => 'nice five',
     );
 
     $images[] = array(
-      'file' => '/themes/garland/logo.png'
+      'file' => '/themes/garland/logo.png',
     );
 
     $link_options = array(
@@ -64,8 +64,8 @@
 
     return theme(
       'gallery_link',
-      $images, 
-      t('Click to open gallery'), 
+      $images,
+      t('Click to open gallery'),
       'big',
       $link_options,
       $fancybox_options
