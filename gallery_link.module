@@ -162,7 +162,7 @@ function gallery_link_get_file_path($file, $preset = NULL) {
       if (strpos($path, '/') === 0) {
         $path = drupal_substr($path, 1);
       }
-      $path = url("file_directory_path()/imagecache/$preset/$path");
+      $path = url(imagecache_create_path($preset, $path));
     }
   }
   return $path;
