@@ -21,6 +21,122 @@ function gallery_link_theme() {
 }
 
 /**
+ * Implements hook_requirements().
+ */
+function gallery_link_requirements($phase) {
+  $requirements = array();
+  $t = get_t();
+
+  if ($phase == 'runtime') {
+
+    // Get path to fancybox library
+    $path = libraries_get_path('fancybox');
+    // Check whether necessary css and js files are available.
+    $css = file_exists($path . '/jquery.fancybox-' . GALLERY_LINK_FANCYBOX_VERSION . '.css');
+    $js = file_exists($path . '/jquery.fancybox-' . GALLERY_LINK_FANCYBOX_VERSION . '.pack.js');
+
+    // If they not available, report an error.
+    if (!$css && !$js) {
+      $requirements['gallery_link_fancybox'] = array(
+        'title' => $t('Gallery link'),
+        'value' => $t('Not Found'),
+        'severity' => REQUIREMENT_ERROR,
+        'description' => $t('You need to <a href="!url">download</a> fancybox @version and put the extracted fancybox folder into <code>sites/all/libraries/</code>.', array(
+          '!url' => url('http://fancybox.googlecode.com/files/jquery.fancybox-' . GALLERY_LINK_FANCYBOX_VERSION . '.zip'),
+          '@version' => GALLERY_LINK_FANCYBOX_VERSION,
+        )),
+      );
+    }
+  }
+
+  return $requirements;
+}
+
+/**
+ * Implements hook_field_formatter_info().
+ */
+function gallery_link_field_formatter_info() {
+  return array(
+    'gallery_link_formatter' => array(
+      'label' => t('Gallery formatter'),
+      'field types' => array('image'),
+      'settings' => array(
+        'style' => 'thumbnail',
+        'trigger_text' => 'Open gallery',
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_formatter_settings_form().
+ */
+function gallery_link_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
+  // This gets the view mode where the settings are stored.
+  $display = $instance['display'][$view_mode];
+  // This gets the settings.
+  $settings = $display['settings'];
+
+  $element = array();
+
+  // Load all image styles
+  $styles = image_styles();
+  $styles = drupal_map_assoc(array_keys($styles));
+
+  $element['style'] = array(
+    '#type' => 'select',
+    '#title' => t('Image style'),
+    '#description' => t('Select the style of the gallery images'),
+    '#default_value' => $settings['style'],
+    '#options' => $styles
+  );
+  
+  $element['trigger_text'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Trigger text'),
+    '#description' => t('This text triggers the gallery on click.'),
+    '#default_value' => $settings['trigger_text'],
+  );
+  
+  // @TODO: Add more settings like fancybox options etc.
+  
+  return $element;
+}
+
+/**
+ * Implements hook_field_formatter_settings_summary().
+ */
+function gallery_link_field_formatter_settings_summary($field, $instance, $view_mode) {
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
+  $summary = t('Show a gallery link where the used style is "@style" and the trigger text is "@trigger_text".', array(
+    '@style' => $settings['style'],
+    '@trigger_text' => $settings['trigger_text'],
+      ));
+  return $summary;
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function gallery_link_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $element = array();
+  // We store all settings in a variable.
+  $settings = $display['settings'];
+  // We also store the settings directly in a variable.
+  $size = $settings['style'];
+  $tooltip = $settings['trigger_text'];
+
+  $gallery_items = array();
+  foreach ($items as $item) {
+    // Store every file id.
+    $gallery_items[] = $item['fid'];
+  }
+  $element[0]['#markup'] = theme('gallery_link', $gallery_items, $settings['trigger_text'], $settings['style']);
+  return $element;
+}
+
+/**
  * Returns a boolean whether an imagecache preset is available
  *
  * @param string $preset
