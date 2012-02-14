@@ -4,8 +4,9 @@
  * @file
  * Gallery link
  *
- * This is a module which place a link on your site which triggers a slideshow.
+ * This module provides a field formatter for displaying images as gallery.
  */
+
 /* We define the version of fancybox here so that it's easy to update. */
 define('GALLERY_LINK_FANCYBOX_VERSION', '1.3.4');
 
