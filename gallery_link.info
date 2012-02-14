@@ -1,8 +1,6 @@
 name = Gallery link
-description = Provides just some (theming) functions.
-core = 6.x
+description = TODO: Add description
+core = 7.x
 
-dependencies[] = content
-dependencies[] = filefield
-dependencies[] = jquery_update
+dependencies[] = image
 dependencies[] = libraries
