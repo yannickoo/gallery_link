@@ -124,15 +124,15 @@ function gallery_link_field_formatter_view($entity_type, $entity, $field, $insta
   // We store all settings in a variable.
   $settings = $display['settings'];
   // We also store the settings directly in a variable.
-  $size = $settings['style'];
-  $tooltip = $settings['trigger_text'];
+  $style = $settings['style'];
+  $trigger_text = $settings['trigger_text'];
 
   $gallery_items = array();
   foreach ($items as $item) {
     // Store every file id.
     $gallery_items[] = $item['fid'];
   }
-  $element[0]['#markup'] = theme('gallery_link', $gallery_items, $settings['trigger_text'], $settings['style']);
+  $element[0]['#markup'] = theme('gallery_link', $gallery_items, $trigger_text, $style);
   return $element;
 }
 
