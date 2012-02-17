@@ -98,8 +98,8 @@ function gallery_link_field_formatter_settings_form($field, $instance, $view_mod
     '#description' => t('This text triggers the gallery on click.'),
     '#default_value' => $settings['trigger_text'],
   );
-  // @TODO: Add more settings like fancybox options etc.
 
+  // @TODO: Add more settings like fancybox options etc.
   return $element;
 }
 
@@ -198,7 +198,7 @@ function theme_gallery_link($items = array(), $link_text = 'Open gallery', $styl
   $data['images'] = array();
   $output = '';
   if (!empty($style) && !_gallery_link_imagecache_preset_available($style)) {
-  // If $style is set but isn't available we empty $style
+    // If $style is set but isn't available we empty $style.
     $style = '';
   }
   foreach ($items as $delta => $item) {
@@ -238,7 +238,7 @@ function theme_gallery_link($items = array(), $link_text = 'Open gallery', $styl
  *
  * @param string|int $file
  *   Can be a file id or a file path
- * @param string $image
+ * @param string $style
  *   (optional) The name of the image style you want
  *
  * @return string
