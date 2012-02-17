@@ -59,7 +59,7 @@ function gallery_link_requirements($phase) {
 function gallery_link_field_formatter_info() {
   return array(
     'gallery_link_formatter' => array(
-      'label' => t('Gallery linkÃ'),
+      'label' => t('Gallery link'),
       'field types' => array('image'),
       'settings' => array(
         'style' => 'thumbnail',
@@ -238,8 +238,8 @@ function theme_gallery_link($items = array(), $link_text = 'Open gallery', $styl
  *
  * @param string|int $file
  *   Can be a file id or a file path
- * @param string $preset
- *   (optional) The name of the imagecache preset you want
+ * @param string $image
+ *   (optional) The name of the image style you want
  *
  * @return string
  *   Path to requested file
