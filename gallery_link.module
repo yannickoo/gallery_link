@@ -89,18 +89,17 @@ function gallery_link_field_formatter_settings_form($field, $instance, $view_mod
     '#title' => t('Image style'),
     '#description' => t('Select the style of the gallery images'),
     '#default_value' => $settings['style'],
-    '#options' => $styles
+    '#options' => $styles,
   );
-  
+
   $element['trigger_text'] = array(
     '#type' => 'textfield',
     '#title' => t('Trigger text'),
     '#description' => t('This text triggers the gallery on click.'),
     '#default_value' => $settings['trigger_text'],
   );
-  
   // @TODO: Add more settings like fancybox options etc.
-  
+
   return $element;
 }
 
@@ -204,7 +203,7 @@ function theme_gallery_link($items = array(), $link_text = 'Open gallery', $styl
   }
   foreach ($items as $delta => $item) {
     $data['images'][$delta]['href'] = !empty($style) ? gallery_link_get_file_path($item['file'], $style) : gallery_link_get_file_path($item['file']);
-  // If a title (caption) was added we put it in our array.
+    // If a title (caption) was added we put it in our array.
     if (!empty($item['title'])) {
       $data['images'][$delta]['title'] = check_plain($item['title']);
     }
@@ -248,7 +247,7 @@ function theme_gallery_link($items = array(), $link_text = 'Open gallery', $styl
 function gallery_link_get_file_path($file, $style = NULL) {
   // We check whether $file can be a file id.
   if (is_numeric($file)) {
-  // We load the file.
+    // We load the file.
     $file = file_load($file);
     if ($file) {
       // We check whether a preset was given and imagecache module is enabled.
