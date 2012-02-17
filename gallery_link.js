@@ -1,5 +1,5 @@
 (function ($) {
- 
+
   Drupal.behaviors.gallery_link = {
     attach: function (context, settings) {
       // We bind a click event to all items with a "data-gallery-id" attribute
@@ -12,5 +12,6 @@
       });
     }
   }
- 
+
 })(jQuery);
+

@@ -30,7 +30,7 @@ function gallery_link_requirements($phase) {
 
   if ($phase == 'runtime') {
 
-    // Get path to fancybox library
+    // Get path to fancybox library.
     $path = libraries_get_path('fancybox');
     // Check whether necessary css and js files are available.
     $css = file_exists($path . '/jquery.fancybox-' . GALLERY_LINK_FANCYBOX_VERSION . '.css');
@@ -80,7 +80,7 @@ function gallery_link_field_formatter_settings_form($field, $instance, $view_mod
 
   $element = array();
 
-  // Load all image styles
+  // Load all image styles.
   $styles = image_styles();
   $styles = drupal_map_assoc(array_keys($styles));
 
@@ -140,8 +140,8 @@ function gallery_link_field_formatter_view($entity_type, $entity, $field, $insta
 /**
  * Returns a boolean whether an imagecache preset is available
  *
- * @param string $preset
- *   The name of the style.
+ * @param string $style
+ *   The name of the image style.
  *
  * @return boolean
  *   Whether style is available or not.
@@ -181,7 +181,7 @@ function _gallery_link_imagecache_preset_available($style) {
  * @param string $link_text
  *   This is the text of the trigger link
  * @param string $style
- *   The images will be display with this style
+ *   The images will be display with this image style
  * @param array $link_options
  *   (optional) Here can you pass an array which is structured like the options
  *   from the l() function
@@ -193,18 +193,18 @@ function _gallery_link_imagecache_preset_available($style) {
  *   A link which triggers the gallery on click
  */
 function theme_gallery_link($items = array(), $link_text = 'Open gallery', $style = NULL, $link_options = array(), $fancybox_options = array()) {
-// We count so that we can support multiple galleries.
+  // We count so that we can support multiple galleries.
   static $counter = 0;
   $data = array();
   $data['images'] = array();
   $output = '';
   if (!empty($style) && !_gallery_link_imagecache_preset_available($style)) {
-// If $style is set but isn't available we empty $style
+  // If $style is set but isn't available we empty $style
     $style = '';
   }
   foreach ($items as $delta => $item) {
     $data['images'][$delta]['href'] = !empty($style) ? gallery_link_get_file_path($item['file'], $style) : gallery_link_get_file_path($item['file']);
-// If a title (caption) was added we put it in our array.
+  // If a title (caption) was added we put it in our array.
     if (!empty($item['title'])) {
       $data['images'][$delta]['title'] = check_plain($item['title']);
     }
@@ -214,19 +214,19 @@ function theme_gallery_link($items = array(), $link_text = 'Open gallery', $styl
     $data['options'] = $fancybox_options;
   }
 
-// We add needed files for fancybox and our custom javascript file.
+  // We add needed files for fancybox and our custom javascript file.
   drupal_add_css(libraries_get_path('fancybox') . '/jquery.fancybox-' . GALLERY_LINK_FANCYBOX_VERSION . '.css');
   drupal_add_css(drupal_get_path('module', 'gallery_link') . '/gallery_link.css');
   drupal_add_js(libraries_get_path('fancybox') . '/jquery.fancybox-' . GALLERY_LINK_FANCYBOX_VERSION . '.pack.js');
   drupal_add_js(drupal_get_path('module', 'gallery_link') . '/gallery_link.js');
 
-// We put the $data array into the Drupal.settings.gallery_link
+  // We put the $data array into the Drupal.settings.gallery_link.
   drupal_add_js(array('gallery_link' => array($data)), 'setting');
 
-// We add a an attribute which stores the gallery id ($counter)
+  // We add a an attribute which stores the gallery id ($counter)
   $link_options['attributes']['data-gallery-id'] = $counter;
 
-// Now we print the link with given $link_text and all given $options
+  // Now we print the link with given $link_text and all given $options
   $output .= l($link_text, '', $link_options);
 
   $counter++;
@@ -246,9 +246,9 @@ function theme_gallery_link($items = array(), $link_text = 'Open gallery', $styl
  *   Path to requested file
  */
 function gallery_link_get_file_path($file, $style = NULL) {
-// We check whether $file can be a file id.
+  // We check whether $file can be a file id.
   if (is_numeric($file)) {
-// We load the file.
+  // We load the file.
     $file = file_load($file);
     if ($file) {
       // We check whether a preset was given and imagecache module is enabled.
@@ -271,10 +271,10 @@ function gallery_link_get_file_path($file, $style = NULL) {
     }
   }
   else {
-// $file isn't numeric so we guess that this is a file path.
+    // $file isn't numeric so we guess that this is a file path.
     $path = $file;
 
-// We check if the file path could be an internal one.
+    // We check if the file path could be an internal one.
     $path_parsed = parse_url($path);
     if (!isset($path_parsed['scheme'])) {
       if (strpos($path, '/') === 0) {
