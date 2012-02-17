@@ -16,7 +16,7 @@ define('GALLERY_LINK_FANCYBOX_VERSION', '1.3.4');
 function gallery_link_theme() {
   return array(
     'gallery_link' => array(
-      'arguments' => array('element' => NULL),
+      'variables' => array('items' => array(), 'link_text' => NULL, 'style' => NULL, 'link_options' => array(), 'fancybox_options' => array()),
     ),
   );
 }
@@ -63,7 +63,7 @@ function gallery_link_field_formatter_info() {
       'field types' => array('image'),
       'settings' => array(
         'style' => 'thumbnail',
-        'trigger_text' => 'Open gallery',
+        'link_text' => 'Open gallery',
       ),
     ),
   );
@@ -92,11 +92,11 @@ function gallery_link_field_formatter_settings_form($field, $instance, $view_mod
     '#options' => $styles,
   );
 
-  $element['trigger_text'] = array(
+  $element['link_text'] = array(
     '#type' => 'textfield',
-    '#title' => t('Trigger text'),
+    '#title' => t('Link text'),
     '#description' => t('This text triggers the gallery on click.'),
-    '#default_value' => $settings['trigger_text'],
+    '#default_value' => $settings['link_text'],
   );
 
   // @TODO: Add more settings like fancybox options etc.
@@ -109,9 +109,9 @@ function gallery_link_field_formatter_settings_form($field, $instance, $view_mod
 function gallery_link_field_formatter_settings_summary($field, $instance, $view_mode) {
   $display = $instance['display'][$view_mode];
   $settings = $display['settings'];
-  $summary = t('Show a gallery link where the used style is "@style" and the trigger text is "@trigger_text".', array(
+  $summary = t('Place a gallery link where the used style is "@style" and the trigger text is "@link_text".', array(
     '@style' => $settings['style'],
-    '@trigger_text' => $settings['trigger_text'],
+    '@link_text' => $settings['link_text'],
       ));
   return $summary;
 }
@@ -125,14 +125,22 @@ function gallery_link_field_formatter_view($entity_type, $entity, $field, $insta
   $settings = $display['settings'];
   // We also store the settings directly in a variable.
   $style = $settings['style'];
-  $trigger_text = $settings['trigger_text'];
+  $link_text = $settings['link_text'];
 
   $gallery_items = array();
   foreach ($items as $item) {
     // Store every file id.
     $gallery_items[] = $item['fid'];
   }
-  $element[0]['#markup'] = theme('gallery_link', $gallery_items, $trigger_text, $style);
+
+  $variables = array(
+    'items' => $gallery_items,
+    'link_text' => $link_text,
+    'style' => $style,
+  );
+
+  $element[0]['#markup'] = theme('gallery_link', $variables);
+
   return $element;
 }
 
@@ -191,7 +199,15 @@ function _gallery_link_imagecache_preset_available($style) {
  * @return string
  *   A link which triggers the gallery on click
  */
-function theme_gallery_link($items = array(), $link_text = 'Open gallery', $style = NULL, $link_options = array(), $fancybox_options = array()) {
+function theme_gallery_link($variables) {
+
+  // Getting all variables.
+  $items = $variables['items'];
+  $link_text = $variables['link_text'];
+  $style = $variables['style'];
+  $link_options = $variables['link_options'];
+  $fancybox_options = $variables['fancybox_options'];
+
   // We count so that we can support multiple galleries.
   static $counter = 0;
   $data = array();
@@ -202,11 +218,12 @@ function theme_gallery_link($items = array(), $link_text = 'Open gallery', $styl
     $style = '';
   }
   foreach ($items as $delta => $item) {
-    $data['images'][$delta]['href'] = !empty($style) ? gallery_link_get_file_path($item['file'], $style) : gallery_link_get_file_path($item['file']);
+    $data['images'][$delta]['href'] = !empty($style) ? gallery_link_get_file_path($item, $style) : gallery_link_get_file_path($item);
+    // @TODO: Add caption support.
     // If a title (caption) was added we put it in our array.
-    if (!empty($item['title'])) {
+    /*if (!empty($item['title'])) {
       $data['images'][$delta]['title'] = check_plain($item['title']);
-    }
+    }*/
   }
 
   if (isset($fancybox_options) && $fancybox_options) {
@@ -225,6 +242,8 @@ function theme_gallery_link($items = array(), $link_text = 'Open gallery', $styl
   // We add a an attribute which stores the gallery id ($counter)
   $link_options['attributes']['data-gallery-id'] = $counter;
 
+  // Use default link text when no $link_text was set.
+  $link_text = ($link_text) ? $link_text : t('Open gallery');
   // Now we print the link with given $link_text and all given $options
   $output .= l($link_text, '', $link_options);
 
