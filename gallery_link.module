@@ -152,8 +152,8 @@ function gallery_link_field_formatter_view($entity_type, $entity, $field, $insta
  *   style (string)
  *     The images will be display with this image style
  *   link_options (array)
- *     (optional) Here can you pass an array which is structured like the options
- *     from the l() function
+ *     (optional) Here can you pass an array which is structured like the
+ *     options from the l() function
  *   fancybox_options (array)
  *     (optional) Here you can pass an array which defines the fancybox options
  *     (http://fancybox.net/api)

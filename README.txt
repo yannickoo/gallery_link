@@ -6,3 +6,4 @@
   sites/all/libraries/fancybox/jquery.fancybox-1.3.4.pack.js)
 * Add an image field to a content type and choose "Gallery link" on the
   Manage Display site, set some options and have fun :)
+  
