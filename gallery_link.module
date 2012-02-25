@@ -58,7 +58,7 @@ function gallery_link_requirements($phase) {
  */
 function gallery_link_field_formatter_info() {
   return array(
-    'gallery_link_formatter' => array(
+    'gallery_link' => array(
       'label' => t('Gallery link'),
       'field types' => array('image'),
       'settings' => array(
