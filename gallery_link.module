@@ -112,9 +112,9 @@ function gallery_link_field_formatter_settings_form($field, $instance, $view_mod
 function gallery_link_field_formatter_settings_summary($field, $instance, $view_mode) {
   $display = $instance['display'][$view_mode];
   $settings = $display['settings'];
-  $summary = t('Place a gallery link where the used style is "@style" and the trigger text is "@link_text".', array(
-    '@style' => $settings['style'],
-    '@link_text' => $settings['link_text'],
+  $summary = t('Place a gallery link with %style images and the trigger text is "%link_text".', array(
+    '%style' => $settings['style'],
+    '%link_text' => $settings['link_text'],
       ));
   return $summary;
 }
@@ -177,7 +177,8 @@ function theme_gallery_link($variables) {
   $output = '';
 
   foreach ($items as $delta => $item) {
-    $data['images'][$delta]['href'] = ($style != '') ? image_style_url($style, $item['uri']) : file_create_path($item['uri']);
+    $data['images'][$delta]['href'] = ($style != '') ? image_style_url($style, $item['uri']) : file_create_url($item['uri']);
+
     // Store the image title.
     if (!empty($item['title'])) {
       $data['images'][$delta]['title'] = check_plain($item['title']);
