@@ -6,9 +6,33 @@
  *
  * This module provides a field formatter for displaying images as gallery.
  */
-
 /* We define the version of fancybox here so that it's easy to update. */
 define('GALLERY_LINK_FANCYBOX_VERSION', '1.3.4');
+
+function gallery_link_menu() {
+  $items = array();
+
+  $items['admin/config/user-interface/gallery-link'] = array(
+    'title' => 'Gallery link',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gallery_link_settings'),
+    'access arguments' => array('administer gallery link'),
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function gallery_link_permission() {
+  return array(
+    'administer gallery link' => array(
+      'title' => t('Administer Gallery Link'),
+      'description' => t('Configure Gallery Link module'),
+    ),
+  );
+}
 
 /**
  * Implements hook_theme().
@@ -64,12 +88,13 @@ function gallery_link_field_formatter_info() {
       'settings' => array(
         'style' => 'large',
         'link_text' => 'Open gallery',
+        'use_default_fancybox_options' => TRUE,
         'fancybox_options' => array(
           'padding' => 10,
           'margin' => 20,
           'opacity' => false,
           'modal' => false,
-          'cyclic' => false,
+          //'cyclic' => false,
           'scrolling' => 'auto',
           'width' => 560,
           'height' => 340,
@@ -137,145 +162,31 @@ function gallery_link_field_formatter_settings_form($field, $instance, $view_mod
   $element['link_text'] = array(
     '#type' => 'textfield',
     '#title' => t('Link text'),
-    '#description' => t('This text triggers the gallery on click.'),
+    '#description' => t('This text triggers the gallery on click'),
     '#default_value' => $settings['link_text'],
+  );
+
+  $element['use_default_fancybox_options'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Use default fancybox options'),
+    '#description' => t('You can set the default fancybox options <a href="!url">here</a>.', array('!url' => url('admin/config/user-interface/gallery-link', array('query' => array('destination' => 'admin'))))), // @TODO: Check whether url() is neccessary!
+    '#default_value' => TRUE,
   );
 
   $element['fancybox_options'] = array(
     '#type' => 'fieldset',
     '#title' => t('Fancybox options'),
-    '#collapsed' => TRUE,
     '#collapsible' => TRUE,
-  );
-
-  // @TODO: Don't forget to validate whether value is integer!
-  $element['fancybox_options']['padding'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Padding'),
-    '#description' => t('Space between FancyBox wrapper and content'),
-    '#default_value' => $settings['fancybox_options']['padding'],
-    '#size' => 4,
-    '#field_suffix' => 'px',
-  );
-
-  // @TODO: Don't forget to validate whether value is integer!
-  $element['fancybox_options']['margin'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Margin'),
-    '#description' => t('Space between viewport and FancyBox wrapper'),
-    '#default_value' => $settings['fancybox_options']['margin'],
-    '#size' => 4,
-    '#field_suffix' => 'px',
-  );
-
-  $element['fancybox_options']['opacity'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Opacity'),
-    '#description' => t('When true, transparency of content is changed for elastic transitions.'),
-    '#default_value' => $settings['fancybox_options']['opacity'],
-  );
-
-  $element['fancybox_options']['modal'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Modal'),
-    '#description' => t("When true, 'overlayShow' is set to 'true' and 'hideOnOverlayClick', 'hideOnContentClick', 'enableEscapeButton', 'showCloseButton' are set to 'false'."),
-    '#default_value' => $settings['fancybox_options']['modal'],
-  );
-
-  $element['fancybox_options']['cyclic'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Modal'),
-    '#description' => t('When true, galleries will be cyclic, allowing you to keep pressing next/back.'),
-    '#default_value' => $settings['fancybox_options']['cyclic'],
-  );
-
-  $element['fancybox_options']['scrolling'] = array(
-    '#type' => 'select',
-    '#title' => t('Scrolling'),
-    '#description' => t("Set the overflow CSS property to create or hide scrollbars."),
-    '#default_value' => $settings['fancybox_options']['scrolling'],
-    '#options' => array(
-      'auto' => t('Auto'),
-      'yes' => t('Yes'),
-      'no' => t('No'),
+    '#states' => array(
+      'visible' => array(
+        ':input[name$="[use_default_fancybox_options]"]' => array('checked' => FALSE), // @TODO: is $= really neccessary?!
+      ),
     ),
   );
 
-  // @TODO: Don't forget to validate whether value is integer!
-  $element['fancybox_options']['width'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Width'),
-    '#description' => t("Width for content types 'iframe' and 'swf'. Also set for inline content if 'autoDimensions' is set to 'false'."),
-    '#default_value' => $settings['fancybox_options']['width'],
-    '#size' => 4,
-    '#field_suffix' => 'px',
-  );
+  $fancybox_options = _gallery_link_settings_fancybox_options();
+  $element['fancybox_options'] += $fancybox_options['fancybox_options'];
 
-  // @TODO: Don't forget to validate whether value is integer!
-  $element['fancybox_options']['height'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Height'),
-    '#description' => t("Height for content types 'iframe' and 'swf'. Also set for inline content if 'autoDimensions' is set to 'false'."),
-    '#default_value' => $settings['fancybox_options']['height'],
-    '#size' => 4,
-    '#field_suffix' => 'px',
-  );
-
-  $element['fancybox_options']['autoScale'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Auto scale'),
-    '#description' => t('If true, FancyBox is scaled to fit in viewport.'),
-    '#default_value' => $settings['fancybox_options']['autoScale'],
-  );
-
-  $element['fancybox_options']['autoDimensions'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Auto dimensions'),
-    '#description' => t('For inline and ajax views, resizes the view to the element recieves. Make sure it has dimensions otherwise this will give unexpected results.'),
-    '#default_value' => $settings['fancybox_options']['autoDimensions'],
-  );
-
-  $element['fancybox_options']['centerOnScroll'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Center on scroll'),
-    '#description' => t('When true, FancyBox is centered while scrolling page.'),
-    '#default_value' => $settings['fancybox_options']['centerOnScroll'],
-  );
-
-  // ajax
-  // swf
-
-  $element['fancybox_options']['hideOnOverlayClick'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Hide on overlay click'),
-    '#description' => t('Toggle if clicking the overlay should close FancyBox.'),
-    '#default_value' => $settings['fancybox_options']['hideOnOverlayClick'],
-  );
-
-  $element['fancybox_options']['hideOnContentClick'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Hide on content click'),
-    '#description' => t('Toggle if clicking the content should close FancyBox.'),
-    '#default_value' => $settings['fancybox_options']['hideOnContentClick'],
-  );
-
-  $element['fancybox_options']['overlayShow'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Overlay show'),
-    '#description' => t('Toggle overlay.'),
-    '#default_value' => $settings['fancybox_options']['overlayShow'],
-  );
-
-  $element['fancybox_options']['overlayOpacity'] = array(
-    '#type' => 'select',
-    '#title' => t('Overlay opacity'),
-    '#description' => t('Opacity of the overlay.'),
-    '#default_value' => $settings['fancybox_options']['overlayOpacity'],
-    '#options' => drupal_map_assoc(array(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)),
-    '#field_suffix' => '%',
-  );
-
-  // @TODO: Add more settings like fancybox options etc.
   return $element;
 }
 
@@ -299,10 +210,14 @@ function gallery_link_field_formatter_view($entity_type, $entity, $field, $insta
   $element = array();
   // We store all settings in a variable.
   $settings = $display['settings'];
+  dsm($settings);
   // We also store the settings directly in a variable.
   $style = $settings['style'];
   $link_text = $settings['link_text'];
-  $fancybox_options = $settings['fancybox_options'];
+  $use_default_fancybox_options = $settings['use_default_fancybox_options'];
+  $default_fancybox_options = variable_get('gallery_link_fancybox_options');
+  
+  $fancybox_options = ($use_default_fancybox_options) ? $default_fancybox_options :  $settings['fancybox_options'];
 
   $variables = array(
     'items' => $items,
@@ -337,7 +252,6 @@ function gallery_link_field_formatter_view($entity_type, $entity, $field, $insta
  *   A link which triggers the gallery on click
  */
 function theme_gallery_link($variables) {
-dsm($variables);
   // Getting all variables.
   $items = $variables['items'];
   $link_text = $variables['link_text'];
@@ -384,4 +298,341 @@ dsm($variables);
   $counter++;
 
   return $output;
+}
+
+function gallery_link_settings($form_state) {
+  $form = array();
+
+  $form += _gallery_link_settings_fancybox_options();
+
+  return system_settings_form($form);
+}
+
+function _gallery_link_settings_fancybox_options() {
+  $form = array();
+
+  $field_formatters = gallery_link_field_formatter_info();
+  $fancybox_settings = $field_formatters['gallery_link']['settings']['fancybox_options'];
+
+  $settings = variable_get('gallery_link_fancybox_options', $fancybox_settings);
+  // @TODO: Where can we set the options?
+
+  $form['fancybox_options']['style'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Style'),
+    '#collapsed' => TRUE,
+    '#collapsible' => TRUE,
+  );
+
+  $form['fancybox_options']['animation'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Animation'),
+    '#collapsed' => TRUE,
+    '#collapsible' => TRUE,
+  );
+
+  $form['fancybox_options']['behavior'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Behavior'),
+    '#collapsed' => TRUE,
+    '#collapsible' => TRUE,
+  );
+
+  $form['fancybox_options']['style']['padding'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Padding'),
+    '#description' => t('Space between FancyBox wrapper and content'),
+    '#default_value' => $settings['padding'],
+    '#size' => 4,
+    '#field_suffix' => 'px',
+    '#element_validate' => array('element_validate_integer_positive'),
+  );
+
+  $form['fancybox_options']['style']['margin'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Margin'),
+    '#description' => t('Space between viewport and FancyBox wrapper'),
+    '#default_value' => $settings['margin'],
+    '#size' => 4,
+    '#field_suffix' => 'px',
+    '#element_validate' => array('element_validate_integer_positive'),
+  );
+
+  $form['fancybox_options']['style']['opacity'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Opacity'),
+    '#description' => t('When true, transparency of content is changed for elastic transitions'),
+    '#default_value' => $settings['opacity'],
+  );
+
+  $form['fancybox_options']['behavior']['modal'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Modal'),
+    '#description' => t("When true, 'overlayShow' is set to 'true' and 'hideOnOverlayClick', 'hideOnContentClick', 'enableEscapeButton', 'showCloseButton' are set to 'false'"),
+    '#default_value' => $settings['modal'],
+  );
+
+
+  /*
+    We don't allow a cyclic settings because we're displaying a gallery so
+    it doesn't make sense to disable the cyclic.
+
+    $form['fancybox_options']['cyclic'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Cyclic'),
+    '#description' => t('When true, galleries will be cyclic, allowing you to keep pressing next/back.'),
+    '#default_value' => $settings['cyclic'],
+    );
+   */
+
+  $form['fancybox_options']['style']['scrolling'] = array(
+    '#type' => 'select',
+    '#title' => t('Scrolling'),
+    '#description' => t('Set the overflow CSS property to create or hide scrollbars'),
+    '#default_value' => $settings['scrolling'],
+    '#options' => array(
+      'auto' => t('Auto'),
+      'yes' => t('Yes'),
+      'no' => t('No'),
+    ),
+  );
+
+  $form['fancybox_options']['style']['width'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Width'),
+    '#description' => t("Width for content types 'iframe' and 'swf'. Also set for inline content if 'autoDimensions' is set to 'false'"),
+    '#default_value' => $settings['width'],
+    '#size' => 4,
+    '#field_suffix' => 'px',
+    '#element_validate' => array('element_validate_integer_positive'),
+  );
+
+  $form['fancybox_options']['style']['height'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Height'),
+    '#description' => t("Height for content types 'iframe' and 'swf'. Also set for inline content if 'autoDimensions' is set to 'false'"),
+    '#default_value' => $settings['height'],
+    '#size' => 4,
+    '#field_suffix' => 'px',
+    '#element_validate' => array('element_validate_integer_positive'),
+  );
+
+  $form['fancybox_options']['behavior']['autoScale'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Auto scale'),
+    '#description' => t('If true, FancyBox is scaled to fit in viewport'),
+    '#default_value' => $settings['autoScale'],
+  );
+
+  $form['fancybox_options']['style']['autoDimensions'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Auto dimensions'),
+    '#description' => t('For inline and ajax views, resizes the view to the element recieves. Make sure it has dimensions otherwise this will give unexpected results'),
+    '#default_value' => $settings['autoDimensions'],
+  );
+
+  $form['fancybox_options']['behavior']['centerOnScroll'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Center on scroll'),
+    '#description' => t('When true, FancyBox is centered while scrolling page'),
+    '#default_value' => $settings['centerOnScroll'],
+  );
+
+  // ajax
+  // swf
+
+  $form['fancybox_options']['behavior']['hideOnOverlayClick'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Hide on overlay click'),
+    '#description' => t('Toggle if clicking the overlay should close FancyBox'),
+    '#default_value' => $settings['hideOnOverlayClick'],
+  );
+
+  $form['fancybox_options']['behavior']['hideOnContentClick'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Hide on content click'),
+    '#description' => t('Toggle if clicking the content should close FancyBox'),
+    '#default_value' => $settings['hideOnContentClick'],
+  );
+
+  $form['fancybox_options']['style']['overlayShow'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Show overlay'),
+    '#description' => t('Toggle overlay'),
+    '#default_value' => $settings['overlayShow'],
+  );
+
+  $form['fancybox_options']['style']['overlayOpacity'] = array(
+    '#type' => 'select',
+    '#title' => t('Overlay opacity'),
+    '#description' => t('Opacity of the overlay'),
+    '#default_value' => $settings['overlayOpacity'],
+    '#options' => drupal_map_assoc(array(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)),
+    '#field_suffix' => '%',
+    '#element_validate' => array('_gallery_link_fix_opacity'), // @TODO: WTF?!
+  );
+
+  $form['fancybox_options']['style']['overlayColor'] = array(
+    '#type' => (!module_exists('jquery_colorpicker')) ? 'textfield' : 'jquery_colorpicker',
+    '#title' => t('Overlay color'),
+    '#description' => t('Color of the overlay'),
+    '#default_value' => $settings['overlayColor'],
+  );
+
+  $form['fancybox_options']['style']['titleShow'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Show title'),
+    '#description' => t('Toggle title'),
+    '#default_value' => $settings['overlayShow'],
+  );
+
+  $form['fancybox_options']['style']['titlePosition'] = array(
+    '#type' => 'select',
+    '#title' => t('Title position'),
+    '#description' => t("The position of title. Can be set to 'outside', 'inside' or 'over'"),
+    '#default_value' => $settings['titlePosition'],
+    '#options' => drupal_map_assoc(array('outside', 'inside', 'over')),
+  );
+
+
+  // titleFormat
+
+  $form['fancybox_options']['animation']['transitionIn'] = array(
+    '#type' => 'select',
+    '#title' => t('Transition in'),
+    '#description' => t("The transition type. Can be set to 'elastic', 'fade' or 'none'"),
+    '#default_value' => $settings['transitionIn'],
+    '#options' => drupal_map_assoc(array('elastic', 'fade', 'none')),
+  );
+
+  $form['fancybox_options']['animation']['transitionOut'] = array(
+    '#type' => 'select',
+    '#title' => t('Transition out'),
+    '#description' => t("The transition type. Can be set to 'elastic', 'fade' or 'none'"),
+    '#default_value' => $settings['transitionOut'],
+    '#options' => drupal_map_assoc(array('elastic', 'fade', 'none')),
+  );
+
+  $form['fancybox_options']['animation']['speedIn'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Speed in'),
+    '#description' => t('Speed of the fade and elastic transitions, in milliseconds'),
+    '#default_value' => $settings['speedIn'],
+    '#size' => 4,
+    '#field_suffix' => 'ms',
+    '#element_validate' => array('element_validate_integer_positive'),
+  );
+
+  $form['fancybox_options']['animation']['speedOut'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Speed out'),
+    '#description' => t('Speed of the fade and elastic transitions, in milliseconds'),
+    '#default_value' => $settings['speedOut'],
+    '#size' => 4,
+    '#field_suffix' => 'ms',
+    '#element_validate' => array('element_validate_integer_positive'),
+  );
+
+  $form['fancybox_options']['animation']['changeSpeed'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Speed out'),
+    '#description' => t('Speed of the fade and elastic transitions, in milliseconds'),
+    '#default_value' => $settings['changeSpeed'],
+    '#size' => 4,
+    '#field_suffix' => 'ms',
+    '#element_validate' => array('element_validate_integer_positive'),
+  );
+
+  $form['fancybox_options']['animation']['changeFade'] = array(
+    '#type' => 'select',
+    '#title' => t('Transition in'),
+    '#description' => t('Speed of the content fading while changing gallery items'),
+    '#default_value' => $settings['changeFade'],
+    '#options' => drupal_map_assoc(array('elastic', 'fade', 'none')),
+  );
+
+  $form['fancybox_options']['animation']['easingIn'] = array(
+    '#type' => 'select',
+    '#title' => t('Easing in'),
+    '#description' => t('Easing used for elastic animations'),
+    '#default_value' => $settings['easingIn'],
+    '#options' => drupal_map_assoc(array(
+      'swing',
+      'easeIn',
+      'easeOut',
+      'easeInOut',
+      'expoin',
+      'expoout',
+      'expoinout',
+      'bouncein',
+      'bounceout',
+      'bounceinout',
+      'elasin',
+      'elasout',
+      'elasinout',
+      'backin',
+      'backout',
+      'backinout',
+    )),
+  );
+
+  $form['fancybox_options']['animation']['easingOut'] = array(
+    '#type' => 'select',
+    '#title' => t('Easing out'),
+    '#description' => t('Easing used for elastic animations'),
+    '#default_value' => $settings['easingOut'],
+    '#options' => drupal_map_assoc(array(
+      'swing',
+      'easeIn',
+      'easeOut',
+      'easeInOut',
+      'expoin',
+      'expoout',
+      'expoinout',
+      'bouncein',
+      'bounceout',
+      'bounceinout',
+      'elasin',
+      'elasout',
+      'elasinout',
+      'backin',
+      'backout',
+      'backinout',
+    )),
+  );
+
+  $form['fancybox_options']['style']['showCloseButton'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Show close button'),
+    '#description' => t('Toggle close button'),
+    '#default_value' => $settings['showCloseButton'],
+  );
+
+  $form['fancybox_options']['style']['showNavArrows'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Show navigation arrows'),
+    '#description' => t('Toggle navigation arrows'),
+    '#default_value' => $settings['showNavArrows'],
+  );
+
+  $form['fancybox_options']['style']['enableEscapeButton'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Enable escape button'),
+    '#description' => t('Toggle if pressing Esc button closes FancyBox'),
+    '#default_value' => $settings['enableEscapeButton'],
+  );
+
+  // onStart
+  // onCancel
+  // onComplete
+  // onCleanup
+  // onClosed
+
+  return $form;
+}
+
+function _gallery_link_fix_opacity(&$element, &$form_state) {
+  $value = $element['#value'];
+  // The field value is e.g. 10 so we have to divide it to get 0.1.
+  $element['#value'] = $value / 100;
 }
