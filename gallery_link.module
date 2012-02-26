@@ -141,22 +141,10 @@ function gallery_link_field_formatter_settings_form($field, $instance, $view_mod
     '#default_value' => $settings['link_text'],
   );
 
-  $element['use_default_fancybox_options'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Use default fancybox options'),
-    '#description' => t('You can set the default fancybox options <a href="!url">here</a>.', array('!url' => url('admin/config/user-interface/gallery-link', array('query' => array('destination' => 'admin'))))), // @TODO: Check whether url() is neccessary!
-    '#default_value' => TRUE,
-  );
-
   $element['fancybox_options'] = array(
     '#type' => 'fieldset',
     '#title' => t('Fancybox options'),
     '#collapsible' => TRUE,
-    '#states' => array(
-      'visible' => array(
-        ':input[name$="[use_default_fancybox_options]"]' => array('checked' => FALSE), // @TODO: is $= really neccessary?!
-      ),
-    ),
   );
 
   $fancybox_options = _gallery_link_settings_fancybox_options();
@@ -185,7 +173,6 @@ function gallery_link_field_formatter_view($entity_type, $entity, $field, $insta
   $element = array();
   // We store all settings in a variable.
   $settings = $display['settings'];
-  dsm($settings);
   // We also store the settings directly in a variable.
   $style = $settings['style'];
   $link_text = $settings['link_text'];
