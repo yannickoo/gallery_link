@@ -9,31 +9,6 @@
 /* We define the version of fancybox here so that it's easy to update. */
 define('GALLERY_LINK_FANCYBOX_VERSION', '1.3.4');
 
-function gallery_link_menu() {
-  $items = array();
-
-  $items['admin/config/user-interface/gallery-link'] = array(
-    'title' => 'Gallery link',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('gallery_link_settings'),
-    'access arguments' => array('administer gallery link'),
-  );
-
-  return $items;
-}
-
-/**
- * Implements hook_permission().
- */
-function gallery_link_permission() {
-  return array(
-    'administer gallery link' => array(
-      'title' => t('Administer Gallery Link'),
-      'description' => t('Configure Gallery Link module'),
-    ),
-  );
-}
-
 /**
  * Implements hook_theme().
  */
@@ -214,10 +189,7 @@ function gallery_link_field_formatter_view($entity_type, $entity, $field, $insta
   // We also store the settings directly in a variable.
   $style = $settings['style'];
   $link_text = $settings['link_text'];
-  $use_default_fancybox_options = $settings['use_default_fancybox_options'];
-  $default_fancybox_options = variable_get('gallery_link_fancybox_options');
-  
-  $fancybox_options = ($use_default_fancybox_options) ? $default_fancybox_options :  $settings['fancybox_options'];
+  $fancybox_options = $settings['fancybox_options'];
 
   $variables = array(
     'items' => $items,
