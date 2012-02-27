@@ -67,23 +67,22 @@ function gallery_link_field_formatter_info() {
         'fancybox_options' => array(
           'padding' => 10,
           'margin' => 20,
-          'opacity' => false,
-          'modal' => false,
-          //'cyclic' => false,
+          'opacity' => FALSE,
+          'modal' => FALSE,
           'scrolling' => 'auto',
           'width' => 560,
           'height' => 340,
-          'autoScale' => true,
-          'autoDimensions' => true,
-          'centerOnScroll' => false,
+          'autoScale' => TRUE,
+          'autoDimensions' => TRUE,
+          'centerOnScroll' => FALSE,
           'ajax' => '{}',
           'swf' => "{wmode: 'transparent'}",
-          'hideOnOverlayClick' => true,
-          'hideOnContentClick' => false,
-          'overlayShow' => true,
+          'hideOnOverlayClick' => TRUE,
+          'hideOnContentClick' => FALSE,
+          'overlayShow' => TRUE,
           'overlayOpacity' => 30,
           'overlayColor' => '#666',
-          'titleShow' => true,
+          'titleShow' => TRUE,
           'titlePosition' => 'outside',
           'titleFormat' => null,
           'transitionIn' => 'fade',
@@ -94,14 +93,9 @@ function gallery_link_field_formatter_info() {
           'changeFade' => 'fast',
           'easingIn' => 'swing',
           'easingOut' => 'swing',
-          'showCloseButton' => true,
-          'showNavArrows' => true,
-          'enableEscapeButton' => true,
-          'onStart' => null,
-          'onCancel' => null,
-          'onComplete' => null,
-          'onCleanup' => null,
-          'onClosed' => null,
+          'showCloseButton' => TRUE,
+          'showNavArrows' => TRUE,
+          'enableEscapeButton' => TRUE,
         ),
       ),
     ),
@@ -234,6 +228,7 @@ function theme_gallery_link($variables) {
   }
 
   if (isset($fancybox_options) && $fancybox_options) {
+    $fancybox_options = call_user_func_array('array_merge', $fancybox_options);
     $data['options'] = $fancybox_options;
   }
 
@@ -267,6 +262,10 @@ function gallery_link_settings($form_state) {
   return system_settings_form($form);
 }
 
+/**
+ *
+ * @return array $form 
+ */
 function _gallery_link_settings_fancybox_options() {
   $form = array();
 
@@ -320,29 +319,16 @@ function _gallery_link_settings_fancybox_options() {
   $form['fancybox_options']['style']['opacity'] = array(
     '#type' => 'checkbox',
     '#title' => t('Opacity'),
-    '#description' => t('When true, transparency of content is changed for elastic transitions'),
+    '#description' => t('When TRUE, transparency of content is changed for elastic transitions'),
     '#default_value' => $settings['opacity'],
   );
 
   $form['fancybox_options']['behavior']['modal'] = array(
     '#type' => 'checkbox',
     '#title' => t('Modal'),
-    '#description' => t("When true, 'overlayShow' is set to 'true' and 'hideOnOverlayClick', 'hideOnContentClick', 'enableEscapeButton', 'showCloseButton' are set to 'false'"),
+    '#description' => t("When TRUE, 'overlayShow' is set to 'TRUE' and 'hideOnOverlayClick', 'hideOnContentClick', 'enableEscapeButton', 'showCloseButton' are set to 'FALSE'"),
     '#default_value' => $settings['modal'],
   );
-
-
-  /*
-    We don't allow a cyclic settings because we're displaying a gallery so
-    it doesn't make sense to disable the cyclic.
-
-    $form['fancybox_options']['cyclic'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Cyclic'),
-    '#description' => t('When true, galleries will be cyclic, allowing you to keep pressing next/back.'),
-    '#default_value' => $settings['cyclic'],
-    );
-   */
 
   $form['fancybox_options']['style']['scrolling'] = array(
     '#type' => 'select',
@@ -359,7 +345,7 @@ function _gallery_link_settings_fancybox_options() {
   $form['fancybox_options']['style']['width'] = array(
     '#type' => 'textfield',
     '#title' => t('Width'),
-    '#description' => t("Width for content types 'iframe' and 'swf'. Also set for inline content if 'autoDimensions' is set to 'false'"),
+    '#description' => t("Width for content types 'iframe' and 'swf'. Also set for inline content if 'autoDimensions' is set to 'FALSE'"),
     '#default_value' => $settings['width'],
     '#size' => 4,
     '#field_suffix' => 'px',
@@ -369,7 +355,7 @@ function _gallery_link_settings_fancybox_options() {
   $form['fancybox_options']['style']['height'] = array(
     '#type' => 'textfield',
     '#title' => t('Height'),
-    '#description' => t("Height for content types 'iframe' and 'swf'. Also set for inline content if 'autoDimensions' is set to 'false'"),
+    '#description' => t("Height for content types 'iframe' and 'swf'. Also set for inline content if 'autoDimensions' is set to 'FALSE'"),
     '#default_value' => $settings['height'],
     '#size' => 4,
     '#field_suffix' => 'px',
@@ -379,7 +365,7 @@ function _gallery_link_settings_fancybox_options() {
   $form['fancybox_options']['behavior']['autoScale'] = array(
     '#type' => 'checkbox',
     '#title' => t('Auto scale'),
-    '#description' => t('If true, FancyBox is scaled to fit in viewport'),
+    '#description' => t('If TRUE, FancyBox is scaled to fit in viewport'),
     '#default_value' => $settings['autoScale'],
   );
 
@@ -393,7 +379,7 @@ function _gallery_link_settings_fancybox_options() {
   $form['fancybox_options']['behavior']['centerOnScroll'] = array(
     '#type' => 'checkbox',
     '#title' => t('Center on scroll'),
-    '#description' => t('When true, FancyBox is centered while scrolling page'),
+    '#description' => t('When TRUE, FancyBox is centered while scrolling page'),
     '#default_value' => $settings['centerOnScroll'],
   );
 
@@ -428,7 +414,7 @@ function _gallery_link_settings_fancybox_options() {
     '#default_value' => $settings['overlayOpacity'],
     '#options' => drupal_map_assoc(array(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)),
     '#field_suffix' => '%',
-    '#element_validate' => array('_gallery_link_fix_opacity'), // @TODO: WTF?!
+    '#element_validate' => array('_gallery_link_fix_opacity'),
   );
 
   $form['fancybox_options']['style']['overlayColor'] = array(
@@ -580,12 +566,6 @@ function _gallery_link_settings_fancybox_options() {
     '#description' => t('Toggle if pressing Esc button closes FancyBox'),
     '#default_value' => $settings['enableEscapeButton'],
   );
-
-  // onStart
-  // onCancel
-  // onComplete
-  // onCleanup
-  // onClosed
 
   return $form;
 }

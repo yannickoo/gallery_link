@@ -2,5 +2,7 @@ name = Gallery link
 description = TODO: Add description
 core = 7.x
 
+configure = admin/config/user-interface/gallery-link
+
 dependencies[] = image
 dependencies[] = libraries
