@@ -6,6 +6,7 @@
  *
  * This module provides a field formatter for displaying images as gallery.
  */
+
 /* We define the version of fancybox here so that it's easy to update. */
 define('GALLERY_LINK_FANCYBOX_VERSION', '1.3.4');
 
@@ -84,7 +85,6 @@ function gallery_link_field_formatter_info() {
           'overlayColor' => '#666',
           'titleShow' => TRUE,
           'titlePosition' => 'outside',
-          'titleFormat' => null,
           'transitionIn' => 'fade',
           'transitionOut' => 'fade',
           'speedIn' => 300,
@@ -264,7 +264,7 @@ function gallery_link_settings($form_state) {
 
 /**
  *
- * @return array $form 
+ * @return array $form
  */
 function _gallery_link_settings_fancybox_options() {
   $form = array();
@@ -383,9 +383,6 @@ function _gallery_link_settings_fancybox_options() {
     '#default_value' => $settings['centerOnScroll'],
   );
 
-  // ajax
-  // swf
-
   $form['fancybox_options']['behavior']['hideOnOverlayClick'] = array(
     '#type' => 'checkbox',
     '#title' => t('Hide on overlay click'),
@@ -438,9 +435,6 @@ function _gallery_link_settings_fancybox_options() {
     '#default_value' => $settings['titlePosition'],
     '#options' => drupal_map_assoc(array('outside', 'inside', 'over')),
   );
-
-
-  // titleFormat
 
   $form['fancybox_options']['animation']['transitionIn'] = array(
     '#type' => 'select',
