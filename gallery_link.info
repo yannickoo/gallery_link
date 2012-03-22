@@ -1,5 +1,5 @@
 name = Gallery link
-description = TODO: Add description
+description = Provides a field formatter for displaying a gallery triggered by a link. 
 core = 7.x
 
 configure = admin/config/user-interface/gallery-link
