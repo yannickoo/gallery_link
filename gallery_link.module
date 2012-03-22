@@ -22,38 +22,6 @@ function gallery_link_theme() {
 }
 
 /**
- * Implements hook_requirements().
- */
-function gallery_link_requirements($phase) {
-  $requirements = array();
-  $t = get_t();
-
-  if ($phase == 'runtime') {
-
-    // Get path to fancybox library.
-    $path = libraries_get_path('fancybox');
-    // Check whether necessary css and js files are available.
-    $css = file_exists($path . '/jquery.fancybox-' . GALLERY_LINK_FANCYBOX_VERSION . '.css');
-    $js = file_exists($path . '/jquery.fancybox-' . GALLERY_LINK_FANCYBOX_VERSION . '.pack.js');
-
-    // If they not available, report an error.
-    if (!$css && !$js) {
-      $requirements['gallery_link_fancybox'] = array(
-        'title' => $t('Gallery link'),
-        'value' => $t('Not Found'),
-        'severity' => REQUIREMENT_ERROR,
-        'description' => $t('You need to <a href="!url">download</a> fancybox @version and put the extracted fancybox folder into <code>sites/all/libraries/</code>.', array(
-          '!url' => url('http://fancybox.googlecode.com/files/jquery.fancybox-' . GALLERY_LINK_FANCYBOX_VERSION . '.zip'),
-          '@version' => GALLERY_LINK_FANCYBOX_VERSION,
-        )),
-      );
-    }
-  }
-
-  return $requirements;
-}
-
-/**
  * Implements hook_field_formatter_info().
  */
 function gallery_link_field_formatter_info() {
@@ -139,10 +107,294 @@ function gallery_link_field_formatter_settings_form($field, $instance, $view_mod
     '#type' => 'fieldset',
     '#title' => t('Fancybox options'),
     '#collapsible' => TRUE,
+    '#tree' => FALSE,
   );
 
-  $fancybox_options = _gallery_link_settings_fancybox_options();
-  $element['fancybox_options'] += $fancybox_options['fancybox_options'];
+  $element['fancybox_options']['style'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Style'),
+    '#collapsed' => TRUE,
+    '#collapsible' => TRUE,
+  );
+
+  $element['fancybox_options']['animation'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Animation'),
+    '#collapsed' => TRUE,
+    '#collapsible' => TRUE,
+  );
+
+  $element['fancybox_options']['behavior'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Behavior'),
+    '#collapsed' => TRUE,
+    '#collapsible' => TRUE,
+  );
+
+  $element['fancybox_options']['style']['padding'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Padding'),
+    '#description' => t('Space between FancyBox wrapper and content'),
+    '#default_value' => $settings['fancybox_options']['padding'],
+    '#size' => 4,
+    '#field_suffix' => 'px',
+    '#element_validate' => array('element_validate_integer_positive'),
+  );
+
+  $element['fancybox_options']['style']['margin'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Margin'),
+    '#description' => t('Space between viewport and FancyBox wrapper'),
+    '#default_value' => $settings['fancybox_options']['margin'],
+    '#size' => 4,
+    '#field_suffix' => 'px',
+    '#element_validate' => array('element_validate_integer_positive'),
+  );
+
+  $element['fancybox_options']['style']['opacity'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Opacity'),
+    '#description' => t('When TRUE, transparency of content is changed for elastic transitions'),
+    '#default_value' => $settings['fancybox_options']['opacity'],
+  );
+
+  $element['fancybox_options']['behavior']['modal'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Modal'),
+    '#description' => t("When TRUE, 'overlayShow' is set to 'TRUE' and 'hideOnOverlayClick', 'hideOnContentClick', 'enableEscapeButton', 'showCloseButton' are set to 'FALSE'"),
+    '#default_value' => $settings['fancybox_options']['modal'],
+  );
+
+  $element['fancybox_options']['style']['scrolling'] = array(
+    '#type' => 'select',
+    '#title' => t('Scrolling'),
+    '#description' => t('Set the overflow CSS property to create or hide scrollbars'),
+    '#default_value' => $settings['fancybox_options']['scrolling'],
+    '#options' => array(
+      'auto' => t('Auto'),
+      'yes' => t('Yes'),
+      'no' => t('No'),
+    ),
+  );
+
+  $element['fancybox_options']['style']['width'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Width'),
+    '#description' => t("Width for content types 'iframe' and 'swf'. Also set for inline content if 'autoDimensions' is set to 'FALSE'"),
+    '#default_value' => $settings['fancybox_options']['width'],
+    '#size' => 4,
+    '#field_suffix' => 'px',
+    '#element_validate' => array('element_validate_integer_positive'),
+  );
+
+  $element['fancybox_options']['style']['height'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Height'),
+    '#description' => t("Height for content types 'iframe' and 'swf'. Also set for inline content if 'autoDimensions' is set to 'FALSE'"),
+    '#default_value' => $settings['fancybox_options']['height'],
+    '#size' => 4,
+    '#field_suffix' => 'px',
+    '#element_validate' => array('element_validate_integer_positive'),
+  );
+
+  $element['fancybox_options']['behavior']['autoScale'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Auto scale'),
+    '#description' => t('If TRUE, FancyBox is scaled to fit in viewport'),
+    '#default_value' => $settings['fancybox_options']['autoScale'],
+  );
+
+  $element['fancybox_options']['style']['autoDimensions'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Auto dimensions'),
+    '#description' => t('For inline and ajax views, resizes the view to the element recieves. Make sure it has dimensions otherwise this will give unexpected results'),
+    '#default_value' => $settings['fancybox_options']['autoDimensions'],
+  );
+
+  $element['fancybox_options']['behavior']['centerOnScroll'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Center on scroll'),
+    '#description' => t('When TRUE, FancyBox is centered while scrolling page'),
+    '#default_value' => $settings['fancybox_options']['centerOnScroll'],
+  );
+
+  $element['fancybox_options']['behavior']['hideOnOverlayClick'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Hide on overlay click'),
+    '#description' => t('Toggle if clicking the overlay should close FancyBox'),
+    '#default_value' => $settings['fancybox_options']['hideOnOverlayClick'],
+  );
+
+  $element['fancybox_options']['behavior']['hideOnContentClick'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Hide on content click'),
+    '#description' => t('Toggle if clicking the content should close FancyBox'),
+    '#default_value' => $settings['fancybox_options']['hideOnContentClick'],
+  );
+
+  $element['fancybox_options']['style']['overlayShow'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Show overlay'),
+    '#description' => t('Toggle overlay'),
+    '#default_value' => $settings['fancybox_options']['overlayShow'],
+  );
+
+  $element['fancybox_options']['style']['overlayOpacity'] = array(
+    '#type' => 'select',
+    '#title' => t('Overlay opacity'),
+    '#description' => t('Opacity of the overlay'),
+    '#default_value' => $settings['fancybox_options']['overlayOpacity'],
+    '#options' => drupal_map_assoc(array(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)),
+    '#field_suffix' => '%',
+    '#element_validate' => array('_gallery_link_fix_opacity'),
+  );
+
+  $element['fancybox_options']['style']['overlayColor'] = array(
+    '#type' => (!module_exists('jquery_colorpicker')) ? 'textfield' : 'jquery_colorpicker',
+    '#title' => t('Overlay color'),
+    '#description' => t('Color of the overlay'),
+    '#default_value' => $settings['fancybox_options']['overlayColor'],
+  );
+
+  $element['fancybox_options']['style']['titleShow'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Show title'),
+    '#description' => t('Toggle title'),
+    '#default_value' => $settings['fancybox_options']['overlayShow'],
+  );
+
+  $element['fancybox_options']['style']['titlePosition'] = array(
+    '#type' => 'select',
+    '#title' => t('Title position'),
+    '#description' => t("The position of title. Can be set to 'outside', 'inside' or 'over'"),
+    '#default_value' => $settings['fancybox_options']['titlePosition'],
+    '#options' => drupal_map_assoc(array('outside', 'inside', 'over')),
+  );
+
+  $element['fancybox_options']['animation']['transitionIn'] = array(
+    '#type' => 'select',
+    '#title' => t('Transition in'),
+    '#description' => t("The transition type. Can be set to 'elastic', 'fade' or 'none'"),
+    '#default_value' => $settings['fancybox_options']['transitionIn'],
+    '#options' => drupal_map_assoc(array('elastic', 'fade', 'none')),
+  );
+
+  $element['fancybox_options']['animation']['transitionOut'] = array(
+    '#type' => 'select',
+    '#title' => t('Transition out'),
+    '#description' => t("The transition type. Can be set to 'elastic', 'fade' or 'none'"),
+    '#default_value' => $settings['fancybox_options']['transitionOut'],
+    '#options' => drupal_map_assoc(array('elastic', 'fade', 'none')),
+  );
+
+  $element['fancybox_options']['animation']['speedIn'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Speed in'),
+    '#description' => t('Speed of the fade and elastic transitions, in milliseconds'),
+    '#default_value' => $settings['fancybox_options']['speedIn'],
+    '#size' => 4,
+    '#field_suffix' => 'ms',
+    '#element_validate' => array('element_validate_integer_positive'),
+  );
+
+  $element['fancybox_options']['animation']['speedOut'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Speed out'),
+    '#description' => t('Speed of the fade and elastic transitions, in milliseconds'),
+    '#default_value' => $settings['fancybox_options']['speedOut'],
+    '#size' => 4,
+    '#field_suffix' => 'ms',
+    '#element_validate' => array('element_validate_integer_positive'),
+  );
+
+  $element['fancybox_options']['animation']['changeSpeed'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Speed out'),
+    '#description' => t('Speed of the fade and elastic transitions, in milliseconds'),
+    '#default_value' => $settings['fancybox_options']['changeSpeed'],
+    '#size' => 4,
+    '#field_suffix' => 'ms',
+    '#element_validate' => array('element_validate_integer_positive'),
+  );
+
+  $element['fancybox_options']['animation']['changeFade'] = array(
+    '#type' => 'select',
+    '#title' => t('Transition in'),
+    '#description' => t('Speed of the content fading while changing gallery items'),
+    '#default_value' => $settings['fancybox_options']['changeFade'],
+    '#options' => drupal_map_assoc(array('elastic', 'fade', 'none')),
+  );
+
+  $element['fancybox_options']['animation']['easingIn'] = array(
+    '#type' => 'select',
+    '#title' => t('Easing in'),
+    '#description' => t('Easing used for elastic animations'),
+    '#default_value' => $settings['fancybox_options']['easingIn'],
+    '#options' => drupal_map_assoc(array(
+      'swing',
+      'easeIn',
+      'easeOut',
+      'easeInOut',
+      'expoin',
+      'expoout',
+      'expoinout',
+      'bouncein',
+      'bounceout',
+      'bounceinout',
+      'elasin',
+      'elasout',
+      'elasinout',
+      'backin',
+      'backout',
+      'backinout',
+    )),
+  );
+
+  $element['fancybox_options']['animation']['easingOut'] = array(
+    '#type' => 'select',
+    '#title' => t('Easing out'),
+    '#description' => t('Easing used for elastic animations'),
+    '#default_value' => $settings['fancybox_options']['easingOut'],
+    '#options' => drupal_map_assoc(array(
+      'swing',
+      'easeIn',
+      'easeOut',
+      'easeInOut',
+      'expoin',
+      'expoout',
+      'expoinout',
+      'bouncein',
+      'bounceout',
+      'bounceinout',
+      'elasin',
+      'elasout',
+      'elasinout',
+      'backin',
+      'backout',
+      'backinout',
+    )),
+  );
+
+  $element['fancybox_options']['style']['showCloseButton'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Show close button'),
+    '#description' => t('Toggle close button'),
+    '#default_value' => $settings['fancybox_options']['showCloseButton'],
+  );
+
+  $element['fancybox_options']['style']['showNavArrows'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Show navigation arrows'),
+    '#description' => t('Toggle navigation arrows'),
+    '#default_value' => $settings['fancybox_options']['showNavArrows'],
+  );
+
+  $element['fancybox_options']['style']['enableEscapeButton'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Enable escape button'),
+    '#description' => t('Toggle if pressing Esc button closes FancyBox'),
+    '#default_value' => $settings['fancybox_options']['enableEscapeButton'],
+  );
 
   return $element;
 }
@@ -228,7 +480,6 @@ function theme_gallery_link($variables) {
   }
 
   if (isset($fancybox_options) && $fancybox_options) {
-    $fancybox_options = call_user_func_array('array_merge', $fancybox_options);
     $data['options'] = $fancybox_options;
   }
 
@@ -241,327 +492,17 @@ function theme_gallery_link($variables) {
   // We put the $data array into the Drupal.settings.gallery_link.
   drupal_add_js(array('gallery_link' => array($data)), 'setting');
 
-  // We add a an attribute which stores the gallery id ($counter)
+  // We add a an attribute which stores the gallery id ($counter).
   $link_options['attributes']['data-gallery-id'] = $counter;
 
   // Use default link text when no $link_text was set.
   $link_text = ($link_text) ? $link_text : t('Open gallery');
-  // Now we print the link with given $link_text and all given $options
+  // Now we print the link with given $link_text and all given $options.
   $output .= l($link_text, '', $link_options);
 
   $counter++;
 
   return $output;
-}
-
-function gallery_link_settings($form_state) {
-  $form = array();
-
-  $form += _gallery_link_settings_fancybox_options();
-
-  return system_settings_form($form);
-}
-
-/**
- *
- * @return array $form
- */
-function _gallery_link_settings_fancybox_options() {
-  $form = array();
-
-  $field_formatters = gallery_link_field_formatter_info();
-  $fancybox_settings = $field_formatters['gallery_link']['settings']['fancybox_options'];
-
-  $settings = variable_get('gallery_link_fancybox_options', $fancybox_settings);
-  // @TODO: Where can we set the options?
-
-  $form['fancybox_options']['style'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Style'),
-    '#collapsed' => TRUE,
-    '#collapsible' => TRUE,
-  );
-
-  $form['fancybox_options']['animation'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Animation'),
-    '#collapsed' => TRUE,
-    '#collapsible' => TRUE,
-  );
-
-  $form['fancybox_options']['behavior'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Behavior'),
-    '#collapsed' => TRUE,
-    '#collapsible' => TRUE,
-  );
-
-  $form['fancybox_options']['style']['padding'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Padding'),
-    '#description' => t('Space between FancyBox wrapper and content'),
-    '#default_value' => $settings['padding'],
-    '#size' => 4,
-    '#field_suffix' => 'px',
-    '#element_validate' => array('element_validate_integer_positive'),
-  );
-
-  $form['fancybox_options']['style']['margin'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Margin'),
-    '#description' => t('Space between viewport and FancyBox wrapper'),
-    '#default_value' => $settings['margin'],
-    '#size' => 4,
-    '#field_suffix' => 'px',
-    '#element_validate' => array('element_validate_integer_positive'),
-  );
-
-  $form['fancybox_options']['style']['opacity'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Opacity'),
-    '#description' => t('When TRUE, transparency of content is changed for elastic transitions'),
-    '#default_value' => $settings['opacity'],
-  );
-
-  $form['fancybox_options']['behavior']['modal'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Modal'),
-    '#description' => t("When TRUE, 'overlayShow' is set to 'TRUE' and 'hideOnOverlayClick', 'hideOnContentClick', 'enableEscapeButton', 'showCloseButton' are set to 'FALSE'"),
-    '#default_value' => $settings['modal'],
-  );
-
-  $form['fancybox_options']['style']['scrolling'] = array(
-    '#type' => 'select',
-    '#title' => t('Scrolling'),
-    '#description' => t('Set the overflow CSS property to create or hide scrollbars'),
-    '#default_value' => $settings['scrolling'],
-    '#options' => array(
-      'auto' => t('Auto'),
-      'yes' => t('Yes'),
-      'no' => t('No'),
-    ),
-  );
-
-  $form['fancybox_options']['style']['width'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Width'),
-    '#description' => t("Width for content types 'iframe' and 'swf'. Also set for inline content if 'autoDimensions' is set to 'FALSE'"),
-    '#default_value' => $settings['width'],
-    '#size' => 4,
-    '#field_suffix' => 'px',
-    '#element_validate' => array('element_validate_integer_positive'),
-  );
-
-  $form['fancybox_options']['style']['height'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Height'),
-    '#description' => t("Height for content types 'iframe' and 'swf'. Also set for inline content if 'autoDimensions' is set to 'FALSE'"),
-    '#default_value' => $settings['height'],
-    '#size' => 4,
-    '#field_suffix' => 'px',
-    '#element_validate' => array('element_validate_integer_positive'),
-  );
-
-  $form['fancybox_options']['behavior']['autoScale'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Auto scale'),
-    '#description' => t('If TRUE, FancyBox is scaled to fit in viewport'),
-    '#default_value' => $settings['autoScale'],
-  );
-
-  $form['fancybox_options']['style']['autoDimensions'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Auto dimensions'),
-    '#description' => t('For inline and ajax views, resizes the view to the element recieves. Make sure it has dimensions otherwise this will give unexpected results'),
-    '#default_value' => $settings['autoDimensions'],
-  );
-
-  $form['fancybox_options']['behavior']['centerOnScroll'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Center on scroll'),
-    '#description' => t('When TRUE, FancyBox is centered while scrolling page'),
-    '#default_value' => $settings['centerOnScroll'],
-  );
-
-  $form['fancybox_options']['behavior']['hideOnOverlayClick'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Hide on overlay click'),
-    '#description' => t('Toggle if clicking the overlay should close FancyBox'),
-    '#default_value' => $settings['hideOnOverlayClick'],
-  );
-
-  $form['fancybox_options']['behavior']['hideOnContentClick'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Hide on content click'),
-    '#description' => t('Toggle if clicking the content should close FancyBox'),
-    '#default_value' => $settings['hideOnContentClick'],
-  );
-
-  $form['fancybox_options']['style']['overlayShow'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Show overlay'),
-    '#description' => t('Toggle overlay'),
-    '#default_value' => $settings['overlayShow'],
-  );
-
-  $form['fancybox_options']['style']['overlayOpacity'] = array(
-    '#type' => 'select',
-    '#title' => t('Overlay opacity'),
-    '#description' => t('Opacity of the overlay'),
-    '#default_value' => $settings['overlayOpacity'],
-    '#options' => drupal_map_assoc(array(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)),
-    '#field_suffix' => '%',
-    '#element_validate' => array('_gallery_link_fix_opacity'),
-  );
-
-  $form['fancybox_options']['style']['overlayColor'] = array(
-    '#type' => (!module_exists('jquery_colorpicker')) ? 'textfield' : 'jquery_colorpicker',
-    '#title' => t('Overlay color'),
-    '#description' => t('Color of the overlay'),
-    '#default_value' => $settings['overlayColor'],
-  );
-
-  $form['fancybox_options']['style']['titleShow'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Show title'),
-    '#description' => t('Toggle title'),
-    '#default_value' => $settings['overlayShow'],
-  );
-
-  $form['fancybox_options']['style']['titlePosition'] = array(
-    '#type' => 'select',
-    '#title' => t('Title position'),
-    '#description' => t("The position of title. Can be set to 'outside', 'inside' or 'over'"),
-    '#default_value' => $settings['titlePosition'],
-    '#options' => drupal_map_assoc(array('outside', 'inside', 'over')),
-  );
-
-  $form['fancybox_options']['animation']['transitionIn'] = array(
-    '#type' => 'select',
-    '#title' => t('Transition in'),
-    '#description' => t("The transition type. Can be set to 'elastic', 'fade' or 'none'"),
-    '#default_value' => $settings['transitionIn'],
-    '#options' => drupal_map_assoc(array('elastic', 'fade', 'none')),
-  );
-
-  $form['fancybox_options']['animation']['transitionOut'] = array(
-    '#type' => 'select',
-    '#title' => t('Transition out'),
-    '#description' => t("The transition type. Can be set to 'elastic', 'fade' or 'none'"),
-    '#default_value' => $settings['transitionOut'],
-    '#options' => drupal_map_assoc(array('elastic', 'fade', 'none')),
-  );
-
-  $form['fancybox_options']['animation']['speedIn'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Speed in'),
-    '#description' => t('Speed of the fade and elastic transitions, in milliseconds'),
-    '#default_value' => $settings['speedIn'],
-    '#size' => 4,
-    '#field_suffix' => 'ms',
-    '#element_validate' => array('element_validate_integer_positive'),
-  );
-
-  $form['fancybox_options']['animation']['speedOut'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Speed out'),
-    '#description' => t('Speed of the fade and elastic transitions, in milliseconds'),
-    '#default_value' => $settings['speedOut'],
-    '#size' => 4,
-    '#field_suffix' => 'ms',
-    '#element_validate' => array('element_validate_integer_positive'),
-  );
-
-  $form['fancybox_options']['animation']['changeSpeed'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Speed out'),
-    '#description' => t('Speed of the fade and elastic transitions, in milliseconds'),
-    '#default_value' => $settings['changeSpeed'],
-    '#size' => 4,
-    '#field_suffix' => 'ms',
-    '#element_validate' => array('element_validate_integer_positive'),
-  );
-
-  $form['fancybox_options']['animation']['changeFade'] = array(
-    '#type' => 'select',
-    '#title' => t('Transition in'),
-    '#description' => t('Speed of the content fading while changing gallery items'),
-    '#default_value' => $settings['changeFade'],
-    '#options' => drupal_map_assoc(array('elastic', 'fade', 'none')),
-  );
-
-  $form['fancybox_options']['animation']['easingIn'] = array(
-    '#type' => 'select',
-    '#title' => t('Easing in'),
-    '#description' => t('Easing used for elastic animations'),
-    '#default_value' => $settings['easingIn'],
-    '#options' => drupal_map_assoc(array(
-      'swing',
-      'easeIn',
-      'easeOut',
-      'easeInOut',
-      'expoin',
-      'expoout',
-      'expoinout',
-      'bouncein',
-      'bounceout',
-      'bounceinout',
-      'elasin',
-      'elasout',
-      'elasinout',
-      'backin',
-      'backout',
-      'backinout',
-    )),
-  );
-
-  $form['fancybox_options']['animation']['easingOut'] = array(
-    '#type' => 'select',
-    '#title' => t('Easing out'),
-    '#description' => t('Easing used for elastic animations'),
-    '#default_value' => $settings['easingOut'],
-    '#options' => drupal_map_assoc(array(
-      'swing',
-      'easeIn',
-      'easeOut',
-      'easeInOut',
-      'expoin',
-      'expoout',
-      'expoinout',
-      'bouncein',
-      'bounceout',
-      'bounceinout',
-      'elasin',
-      'elasout',
-      'elasinout',
-      'backin',
-      'backout',
-      'backinout',
-    )),
-  );
-
-  $form['fancybox_options']['style']['showCloseButton'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Show close button'),
-    '#description' => t('Toggle close button'),
-    '#default_value' => $settings['showCloseButton'],
-  );
-
-  $form['fancybox_options']['style']['showNavArrows'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Show navigation arrows'),
-    '#description' => t('Toggle navigation arrows'),
-    '#default_value' => $settings['showNavArrows'],
-  );
-
-  $form['fancybox_options']['style']['enableEscapeButton'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Enable escape button'),
-    '#description' => t('Toggle if pressing Esc button closes FancyBox'),
-    '#default_value' => $settings['enableEscapeButton'],
-  );
-
-  return $form;
 }
 
 function _gallery_link_fix_opacity(&$element, &$form_state) {
