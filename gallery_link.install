@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Installation file for Gallery link module.
+ * Installation file for Gallery Link module.
  */
 
 /**
@@ -23,7 +23,7 @@ function gallery_link_requirements($phase) {
     // If they not available, report an error.
     if (!$css && !$js) {
       $requirements['gallery_link_fancybox'] = array(
-        'title' => $t('Gallery link'),
+        'title' => $t('Gallery Link'),
         'value' => $t('Not Found'),
         'severity' => REQUIREMENT_ERROR,
         'description' => $t('You need to <a href="!url">download</a> fancybox @version and put the extracted fancybox folder into <code>sites/all/libraries/</code>.', array(
