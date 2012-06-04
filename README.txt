@@ -41,6 +41,4 @@ Optional: When the Jquery Colorpicker module [2] is enabled you will get a
 ROADMAP
 -------
 
-1. Using hook_library() instead of libraries module
-
-2. Optimize fancybox options settings (dependencies)
+1. Optimize fancybox options settings (dependencies)
