@@ -83,6 +83,8 @@ function gallery_link_field_formatter_settings_form($field, $instance, $view_mod
   $display = $instance['display'][$view_mode];
   // This gets the settings.
   $settings = $display['settings'];
+  // This gets the entity type.
+  $entity_type = $instance['entity_type'];
 
   $element = array();
 
@@ -107,6 +109,13 @@ function gallery_link_field_formatter_settings_form($field, $instance, $view_mod
     '#description' => t('This text triggers the gallery on click'),
     '#default_value' => $settings['link_text'],
   );
+
+  if (module_exists('token')) {
+    $element['token'] = array(
+      '#type' => 'container',
+      '#children' => theme('token_tree', array('token_types' => array($entity_type))),
+    );
+  }
 
   $element['fancybox_options'] = array(
     '#type' => 'fieldset',
@@ -429,7 +438,11 @@ function gallery_link_field_formatter_view($entity_type, $entity, $field, $insta
   $link_text = $settings['link_text'];
   $fancybox_options = $settings['fancybox_options'];
 
-  $fancybox_options['style']['overlayOpacity'] = $fancybox_options['style']['overlayOpacity'] / 100; 
+  $fancybox_options['style']['overlayOpacity'] = $fancybox_options['style']['overlayOpacity'] / 100;
+
+  if (module_exists('token')) {
+    $link_text = token_replace($link_text, array($entity_type => $entity), array('clear' => TRUE));
+  }
 
   $variables = array(
     'items' => $items,
