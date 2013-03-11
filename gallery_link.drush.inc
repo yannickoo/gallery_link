@@ -80,7 +80,7 @@ function drush_gallery_link_fancybox_download() {
     // Extract zip archive.
     drush_shell_exec('unzip -qq -o ' . $filename);
     // Rename directory.
-    drush_shell_exec('mv fancyBox-* ' . 'fancybox');
+    drush_shell_exec('mv fancyBox-* fancybox');
     // Remove zip archive.
     drush_op('unlink', $filename);
   }

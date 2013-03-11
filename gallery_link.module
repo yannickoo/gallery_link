@@ -156,7 +156,6 @@ function gallery_link_field_formatter_settings_form($field, $instance, $view_mod
     '#title' => t('Behavior'),
     '#collapsed' => TRUE,
     '#collapsible' => TRUE,
-    //'#access' => FALSE,
   );
 
   $element['fancybox_options']['helpers'] = array(
@@ -351,7 +350,6 @@ function gallery_link_field_formatter_settings_form($field, $instance, $view_mod
     '#type' => 'checkbox',
     '#title' => t('Loop'),
     '#default_value' => $settings['fancybox_options']['behavior']['loop'],
-    '#description' => t('If set to true, enables cyclic navigation. This means, if you click "next" after you reach the last element, first element will be displayed (and vice versa).'),
   );
 
   $element['fancybox_options']['behavior']['keys'] = array(
@@ -479,7 +477,7 @@ function gallery_link_field_formatter_view($entity_type, $entity, $field, $insta
         continue;
       }
       if ($value == $defaults[$group][$option]) {
-       unset($fancybox_options[$group][$option]);
+        unset($fancybox_options[$group][$option]);
       }
     }
   }
@@ -566,4 +564,3 @@ function gallery_link_field_formatter_view($entity_type, $entity, $field, $insta
     ),
   );
 }
-
