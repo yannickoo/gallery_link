@@ -24,7 +24,8 @@ INSTALLATION
    (so jquery.fancybox.pack.js is located at
    sites/all/libraries/fancybox/source/jquery.fancybox.pack.js)
 
-3. Add an image field to an entity and select "Gallery Link" as field formatter.
+3. Add an image field to a entity type and select "Gallery Link" as
+   field formatter at the "Manage display" page.
 
 4. Set some options and save them.
 
