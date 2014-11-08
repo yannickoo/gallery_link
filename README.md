@@ -2,7 +2,7 @@
 
 Current Maintainers:
 
-* [yannickoo](http://drupal.org/user/531118)
+* [yannickoo](https://www.drupal.org/u/yannickoo)
 
 Gallery Link provides a field formatter for image fields.
 You can display images as gallery triggered by a link.
