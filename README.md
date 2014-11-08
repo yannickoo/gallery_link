@@ -1,24 +1,13 @@
-CONTENTS OF THIS FILE
----------------------
-
- * Introduction
- * Installation
- * Roadmap
-
-
-INTRODUCTION
-------------
+# Introduction
 
 Current Maintainers:
 
-* [yannickoo](http://drupal.org/user/531118)
+* [yannickoo](https://www.drupal.org/u/yannickoo)
 
 Gallery Link provides a field formatter for image fields.
 You can display images as gallery triggered by a link.
 
-
-INSTALLATION
-------------
+# Installation
 
 1. Download fancybox 1.3.4 from fancybox.net [1]
 
@@ -38,9 +27,3 @@ Optional: When the Jquery Colorpicker module [2] is enabled you will get a
 
 [1] http://fancybox.googlecode.com/files/jquery.fancybox-1.3.4.zip
 [2] http://drupal.org/project/jquery_colorpicker
-
-
-ROADMAP
--------
-
-1. Optimize fancybox options settings (dependencies)
