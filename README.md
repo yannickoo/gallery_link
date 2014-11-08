@@ -1,13 +1,4 @@
-CONTENTS OF THIS FILE
----------------------
-
- * Introduction
- * Installation
- * Roadmap
-
-
-INTRODUCTION
-------------
+# Introduction
 
 Current Maintainers:
 
@@ -16,9 +7,7 @@ Current Maintainers:
 Gallery Link provides a field formatter for image fields.
 You can display images as gallery triggered by a link.
 
-
-INSTALLATION
-------------
+# Installation
 
 1. Download fancyBox from GitHub [1]
 
